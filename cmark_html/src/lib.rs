@@ -7,6 +7,8 @@ pub use html_element::*;
 pub mod raw;
 pub use raw::*;
 
+pub mod html;
+
 pub mod fragment;
 pub use fragment::*;
 
