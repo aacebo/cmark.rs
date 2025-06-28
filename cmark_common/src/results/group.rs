@@ -1,6 +1,6 @@
 use std::fmt::{Display, Pointer};
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Group<T, E> {
     results: Vec<Result<T, E>>,
 }
