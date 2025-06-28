@@ -1,9 +1,9 @@
 [package]
-name = "cmark"
+name = "cmark_common"
 version = "0.1.0"
 edition = "2024"
+publish = false
 
 [lib]
 
 [dependencies]
-log = { version = "0.4", features = ["std"] }

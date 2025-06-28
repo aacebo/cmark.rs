@@ -14,6 +14,10 @@ name = "cmark-cli"
 version = "0.1.0"
 
 [[package]]
+name = "cmark_common"
+version = "0.1.0"
+
+[[package]]
 name = "cmark_html"
 version = "0.1.0"
 
