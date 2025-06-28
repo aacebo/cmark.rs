@@ -1,4 +1,3 @@
-pub mod collections;
 pub mod error;
 pub mod module;
 pub mod pointer;
