@@ -7,6 +7,9 @@ use common::collections::Map;
 
 use crate::{Element, esc};
 
+/// Attributes
+///
+/// html element attributes
 pub type Attributes<'a> = Map<&'a str, Cow<'a, str>>;
 
 impl<'a> Element for Map<&'a str, Cow<'a, str>> {
