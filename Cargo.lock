@@ -10,7 +10,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "cmark_common"
+name = "common"
+version = "0.1.0"
+
+[[package]]
+name = "htmlx"
 version = "0.1.0"
 
 [[package]]
