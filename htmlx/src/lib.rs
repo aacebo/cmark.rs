@@ -1,6 +1,9 @@
 mod esc;
 pub use esc::*;
 
+mod fragment;
+pub use fragment::*;
+
 mod element;
 pub use element::*;
 
