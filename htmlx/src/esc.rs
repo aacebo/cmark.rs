@@ -3,8 +3,10 @@ use std::fmt::{Result, Write};
 /// Simple HTML escaping, so strings can be safely rendered.
 ///
 /// ```rust
+/// # use htmlx::esc;
+///
 /// let mut buf = String::new();
-/// escape(r#"<hello world="attribute" />"#, &mut buf).unwrap();
+/// esc(r#"<hello world="attribute" />"#, &mut buf).unwrap();
 /// assert_eq!(buf, "&lt;hello world=&quot;attribute&quot; /&gt;");
 /// ```
 pub fn esc<W: Write>(html: &str, writer: &mut W) -> Result {
