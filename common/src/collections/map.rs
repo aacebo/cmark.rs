@@ -61,4 +61,12 @@ where
             None => panic!("map key not found"),
         };
     }
+
+    pub fn drain(&mut self) -> std::vec::Drain<'_, KeyValue<K, V>> {
+        return self.items.drain(0..);
+    }
+
+    pub fn iter(&self) -> std::slice::Iter<'_, KeyValue<K, V>> {
+        return self.items.iter();
+    }
 }

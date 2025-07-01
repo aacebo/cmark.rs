@@ -16,6 +16,9 @@ version = "0.1.0"
 [[package]]
 name = "htmlx"
 version = "0.1.0"
+dependencies = [
+ "common",
+]
 
 [[package]]
 name = "log"
