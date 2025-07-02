@@ -4,7 +4,7 @@ use std::fmt::{Result, Write};
 macro_rules! primitive_render_impl {
     ($t:ty) => {
         impl Element for $t {
-            fn render_into<W: Write>(self, writer: &mut W) -> Result {
+            fn render_into<W: Write>(&self, writer: &mut W) -> Result {
                 return write!(writer, "{}", self);
             }
         }

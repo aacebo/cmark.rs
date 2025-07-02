@@ -12,7 +12,7 @@ impl<T: Element> Fragment<T> {
 }
 
 impl<T: Element> Element for Fragment<T> {
-    fn render_into<W: std::fmt::Write>(self, writer: &mut W) -> std::fmt::Result {
+    fn render_into<W: std::fmt::Write>(&self, writer: &mut W) -> std::fmt::Result {
         return self.children.render_into(writer);
     }
 }

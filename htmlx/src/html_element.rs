@@ -18,8 +18,8 @@ impl<'a, T: Element> HTMLElement<'a, T> {
 }
 
 impl<'a, T: Element> Element for HTMLElement<'a, T> {
-    fn render_into<W: std::fmt::Write>(self, writer: &mut W) -> std::fmt::Result {
-        return match self.content {
+    fn render_into<W: std::fmt::Write>(&self, writer: &mut W) -> std::fmt::Result {
+        return match &self.content {
             None => {
                 write!(writer, "<{}", self.selector)?;
                 self.attributes.render_into(writer)?;

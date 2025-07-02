@@ -5,7 +5,7 @@ use crate::Element;
 /// Raw
 ///
 /// raw html string
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct Raw<'s>(&'s str);
 
 impl<'s> From<&'s str> for Raw<'s> {
@@ -15,7 +15,7 @@ impl<'s> From<&'s str> for Raw<'s> {
 }
 
 impl<'s> Element for Raw<'s> {
-    fn render_into<W: Write>(self, writer: &mut W) -> Result {
+    fn render_into<W: Write>(&self, writer: &mut W) -> Result {
         return write!(writer, "{}", self.0);
     }
 }

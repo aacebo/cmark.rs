@@ -69,4 +69,8 @@ where
     pub fn iter(&self) -> std::slice::Iter<'_, KeyValue<K, V>> {
         return self.items.iter();
     }
+
+    pub fn len(&self) -> usize {
+        return self.items.len();
+    }
 }
