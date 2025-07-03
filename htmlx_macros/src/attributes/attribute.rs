@@ -1,39 +1,43 @@
 use std::hash::{Hash, Hasher};
 
-use common::{collections::KeyValue, validation::Validate};
-use quote::quote;
+use quote::{ToTokens, quote};
 use syn::ext::IdentExt;
 use syn::parse::Parse;
-
-use crate::to_stream::ToStream;
 
 pub type Key = syn::punctuated::Punctuated<syn::Ident, syn::Token![-]>;
 
 #[derive(Clone)]
-pub struct Attribute(KeyValue<Key, Option<syn::Block>>);
+pub struct Attribute {
+    pub key: Key,
+    pub value: Option<syn::Block>,
+}
 
 impl Attribute {
+    pub fn new(key: Key, value: Option<syn::Block>) -> Self {
+        return Self { key, value };
+    }
+
     pub fn identifiers(&self) -> Vec<&syn::Ident> {
-        return (&self.0.key).iter().collect::<Vec<_>>();
+        return (&self.key).iter().collect::<Vec<_>>();
     }
 }
 
-impl From<KeyValue<Key, Option<syn::Block>>> for Attribute {
-    fn from(value: KeyValue<Key, Option<syn::Block>>) -> Self {
-        return Self { 0: value };
+impl ToTokens for Attribute {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+        let stream = self.to_token_stream();
+        return stream.to_tokens(tokens);
     }
-}
 
-impl ToStream for Attribute {
-    fn to_stream(&self) -> proc_macro2::TokenStream {
-        return match &self.0.value {
-            None => quote!(#&self.key),
+    fn to_token_stream(&self) -> proc_macro2::TokenStream {
+        let key = &self.key;
+        return match &self.value {
+            None => quote!(#key),
             Some(value) => {
                 if value.stmts.len() == 1 {
                     let first = &value.stmts[0];
-                    quote!(#first)
+                    quote!({ #key: #first })
                 } else {
-                    quote!(#value)
+                    quote!({ #key: #value })
                 }
             }
         };
@@ -55,23 +59,17 @@ impl Hash for Attribute {
     }
 }
 
-impl Validate for Attribute {
-    fn validate(&self) -> Option<&(dyn std::error::Error + 'static)> {
-        return None;
-    }
-}
-
 impl Parse for Attribute {
     fn parse(input: syn::parse::ParseStream) -> syn::Result<Self> {
         let name = Key::parse_separated_nonempty_with(input, syn::Ident::parse_any)?;
         let has_value = input.peek(syn::Token![=]);
 
         if !has_value {
-            return Ok(Self::from(KeyValue::new(name, None)));
+            return Ok(Self::new(name, None));
         }
 
         input.parse::<syn::Token![=]>()?;
         let value = input.parse::<syn::Block>()?;
-        return Ok(Self::from(KeyValue::new(name, Some(value))));
+        return Ok(Self::new(name, Some(value)));
     }
 }
