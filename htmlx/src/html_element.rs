@@ -23,7 +23,7 @@ impl<'a, T: Element> Element for HTMLElement<'a, T> {
             None => {
                 write!(writer, "<{}", self.selector)?;
                 self.attributes.render_into(writer)?;
-                write!(writer, "/>")
+                write!(writer, " />")
             }
             Some(content) => {
                 write!(writer, "<{}", self.selector)?;
