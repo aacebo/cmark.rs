@@ -17,3 +17,5 @@ mod raw;
 pub use raw::*;
 
 mod primitives;
+
+pub use htmlx_macros::*;

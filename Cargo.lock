@@ -18,12 +18,14 @@ name = "htmlx"
 version = "0.1.0"
 dependencies = [
  "common",
+ "htmlx_macros",
 ]
 
 [[package]]
 name = "htmlx_macros"
 version = "0.1.0"
 dependencies = [
+ "common",
  "htmlx",
  "proc-macro-error",
  "proc-macro2",

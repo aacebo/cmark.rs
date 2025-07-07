@@ -24,6 +24,12 @@ pub trait Element: Sized {
     }
 }
 
+impl Element for () {
+    fn render_into<W: Write>(&self, _writer: &mut W) -> Result {
+        Ok(())
+    }
+}
+
 impl<A: Element, B: Element> Element for (A, B) {
     fn render_into<W: Write>(&self, writer: &mut W) -> Result {
         self.0.render_into(writer)?;

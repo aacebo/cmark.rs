@@ -22,28 +22,6 @@ impl Attribute {
     }
 }
 
-impl ToTokens for Attribute {
-    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-        let stream = self.to_token_stream();
-        return stream.to_tokens(tokens);
-    }
-
-    fn to_token_stream(&self) -> proc_macro2::TokenStream {
-        let key = &self.key;
-        return match &self.value {
-            None => quote!(#key),
-            Some(value) => {
-                if value.stmts.len() == 1 {
-                    let first = &value.stmts[0];
-                    quote!({ #key: #first })
-                } else {
-                    quote!({ #key: #value })
-                }
-            }
-        };
-    }
-}
-
 impl Eq for Attribute {}
 
 impl PartialEq for Attribute {
@@ -71,5 +49,27 @@ impl Parse for Attribute {
         input.parse::<syn::Token![=]>()?;
         let value = input.parse::<syn::Block>()?;
         return Ok(Self::new(name, Some(value)));
+    }
+}
+
+impl ToTokens for Attribute {
+    fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
+        let stream = self.to_token_stream();
+        return stream.to_tokens(tokens);
+    }
+
+    fn to_token_stream(&self) -> proc_macro2::TokenStream {
+        let key = &self.key;
+        return match &self.value {
+            None => quote!(#key),
+            Some(value) => {
+                if value.stmts.len() == 1 {
+                    let first = &value.stmts[0];
+                    quote!(#first)
+                } else {
+                    quote!(#value)
+                }
+            }
+        };
     }
 }

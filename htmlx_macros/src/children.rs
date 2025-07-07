@@ -1,6 +1,6 @@
 #![allow(dead_code)]
 
-use quote::ToTokens;
+use quote::{ToTokens, quote};
 use syn::{
     Result,
     parse::{Parse, ParseStream},
@@ -48,14 +48,40 @@ impl Parse for Children {
             nodes.push(child);
         }
 
-        Ok(Self::from(nodes))
+        return Ok(Self::from(nodes));
     }
 }
 
 impl ToTokens for Children {
     fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
-        for child in self.0.iter() {
-            child.to_tokens(tokens);
+        return self.to_token_stream().to_tokens(tokens);
+    }
+
+    fn to_token_stream(&self) -> proc_macro2::TokenStream {
+        let children_quotes: Vec<_> = self
+            .0
+            .iter()
+            .map(|child| {
+                quote! { #child }
+            })
+            .collect();
+
+        match children_quotes.len() {
+            0 => quote! { Option::<()>::None },
+            1 => quote! { Some(#(#children_quotes),*) },
+            _ => {
+                let mut iter = children_quotes.iter();
+
+                let first = iter.next().unwrap();
+                let second = iter.next().unwrap();
+
+                let tuple_of_tuples = iter.fold(
+                    quote!((#first, #second)),
+                    |renderable, current| quote!((#renderable, #current)),
+                );
+
+                quote! { Some(#tuple_of_tuples) }
+            }
         }
     }
 }

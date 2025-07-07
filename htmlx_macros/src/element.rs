@@ -15,7 +15,7 @@ impl Parse for Element {
         let mut children = Children::new();
 
         if !open.is_void {
-            children = Children::parse(input)?;
+            children = input.parse::<Children>()?;
             input.parse::<tags::Close>()?;
         }
 
@@ -26,14 +26,16 @@ impl Parse for Element {
 impl ToTokens for Element {
     fn to_tokens(&self, tokens: &mut proc_macro2::TokenStream) {
         let selector = &self.open.selector;
-        let children = &self.children;
+        let children = self.children.clone();
         let attributes = self.open.attributes.clone();
         let declaration = quote! {
-            ::htmlx::HTMLElement {
-                selector: stringify!(#selector),
-                attributes: #attributes,
-                contents: #children,
-            }
+            &(
+                ::htmlx::HTMLElement {
+                    selector: stringify!(#selector),
+                    attributes: #attributes,
+                    content: #children,
+                }
+            )
         };
 
         declaration.to_tokens(tokens);

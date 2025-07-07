@@ -7,3 +7,4 @@ edition = "2024"
 
 [dependencies]
 common = { path = "../common" }
+htmlx_macros = { path = "../htmlx_macros" }

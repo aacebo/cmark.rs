@@ -14,3 +14,4 @@ syn = { version = "2.0", features = ["full"] }
 
 [dev-dependencies]
 htmlx = { path = "../htmlx" }
+common = { path = "../common" }

@@ -59,10 +59,17 @@ impl Map {
         };
     }
 
-    pub fn put(&mut self, attribute: Attribute) {
+    pub fn put(&mut self, key: Key, value: Option<syn::Block>) {
+        match self.index(key.clone()) {
+            Some(i) => self.items[i].value = value,
+            None => self.items.push(Attribute::new(key, value)),
+        };
+    }
+
+    pub fn put_object(&mut self, attribute: Attribute) {
         match self.index(attribute.clone().key) {
-            Some(i) => self.items[i] = attribute.clone(),
-            None => self.items.push(attribute.clone()),
+            Some(i) => self.items[i] = attribute,
+            None => self.items.push(attribute),
         };
     }
 
@@ -110,7 +117,7 @@ impl Parse for Map {
                 );
             }
 
-            attributes.put(attribute.clone());
+            attributes.put_object(attribute.clone());
         }
 
         return Ok(attributes);
@@ -123,10 +130,6 @@ impl ToTokens for Map {
     }
 
     fn to_token_stream(&self) -> proc_macro2::TokenStream {
-        if self.items.is_empty() {
-            return quote!(None);
-        }
-
         let attrs: Vec<_> = self
             .items
             .iter()
@@ -138,17 +141,14 @@ impl ToTokens for Map {
                 });
 
                 let value = attribute.to_token_stream();
-
-                quote! {
-                    hm.insert(#ident, ::std::borrow::Cow::from(#value));
-                }
+                return quote! { attributes.put(#ident, ::std::borrow::Cow::from(#value)); };
             })
             .collect();
 
         return quote! {{
-            let mut hm = std::collections::HashMap::<&str, ::std::borrow::Cow<'_, str>>::new();
+            let mut attributes = common::collections::Map::<&str, ::std::borrow::Cow<'_, str>>::new();
             #(#attrs)*
-            Some(hm)
+            attributes
         }};
     }
 }

@@ -14,7 +14,7 @@ mod tags;
 #[proc_macro_error]
 pub fn html(input: TokenStream) -> TokenStream {
     let el = proc_macro2::TokenStream::from(rsx(input));
-    let result = quote! { ::render::Render::render(#el) };
+    let result = quote! { ::htmlx::Element::render(#el) };
     return TokenStream::from(result);
 }
 
