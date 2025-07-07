@@ -1,2 +1,2 @@
-pub mod pointer_test;
+pub mod cursor_test;
 pub mod tx_test;

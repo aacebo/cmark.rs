@@ -3,14 +3,14 @@ use std::error::Error;
 use super::{position::Position, token::Token, token_pointer::TokenPointer};
 
 #[derive(Debug, Clone)]
-pub struct Pointer {
+pub struct Cursor {
     pub src: Vec<u8>,
     pub start: Position,
     pub end: Position,
     pub tokens: TokenPointer,
 }
 
-impl Pointer {
+impl Cursor {
     pub fn new(src: Vec<u8>) -> Self {
         return Self {
             src,
