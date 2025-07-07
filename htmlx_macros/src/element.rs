@@ -28,7 +28,7 @@ impl ToTokens for Element {
         let selector = &self.open.selector;
         let children = self.children.clone();
         let attributes = self.open.attributes.clone();
-        let declaration = quote! {
+        let mut declaration = quote! {
             &(
                 ::htmlx::HTMLElement {
                     selector: stringify!(#selector),
@@ -37,6 +37,16 @@ impl ToTokens for Element {
                 }
             )
         };
+
+        if selector.to_token_stream().to_string() == ":: htmlx :: Fragment" {
+            declaration = quote! {
+                &(
+                    ::htmlx::Fragment {
+                        content: #children,
+                    }
+                )
+            };
+        }
 
         declaration.to_tokens(tokens);
     }
