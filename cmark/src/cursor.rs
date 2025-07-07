@@ -2,7 +2,7 @@ use std::error::Error;
 
 use common::errors::ToError;
 
-use crate::{lex_error::LexError, position::Position, token::Token};
+use crate::{lex_error::LexError, position::Position, tokens::{self, Token}};
 
 #[derive(Debug, Clone)]
 pub struct Cursor {
@@ -48,7 +48,7 @@ impl Cursor {
         return &self.src[self.start.index..self.end.index];
     }
 
-    pub fn create(&mut self, kind: u8) -> Token {
+    pub fn create(&mut self, kind: tokens::Kind) -> Token {
         let token = Token::new(kind, self.start, self.end, Vec::from(self.to_bytes()));
         return token;
     }
