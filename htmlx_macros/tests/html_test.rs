@@ -30,3 +30,9 @@ pub fn should_render_fragment_element() {
     let value = htmlx::rsx! { <>{"test"}</> };
     assert_eq!(value.render(), "test");
 }
+
+#[test]
+pub fn should_render_with_children() {
+    let value = htmlx::html! { <p class={"text bold"}>{"test"}</p> };
+    assert_eq!(value, r#"<p class="text bold">test</p>"#);
+}
