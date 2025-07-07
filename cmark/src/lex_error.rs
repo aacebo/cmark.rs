@@ -1,13 +1,13 @@
 use super::position::Position;
 
 #[derive(Debug, Clone)]
-pub struct Error {
+pub struct LexError {
     pub start: Position,
     pub end: Position,
     pub message: String,
 }
 
-impl Error {
+impl LexError {
     pub fn from_str(start: Position, end: Position, message: &str) -> Self {
         return Self {
             start,
@@ -25,7 +25,7 @@ impl Error {
     }
 }
 
-impl std::fmt::Display for Error {
+impl std::fmt::Display for LexError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         return write!(
             f,
@@ -37,7 +37,7 @@ impl std::fmt::Display for Error {
     }
 }
 
-impl std::error::Error for Error {
+impl std::error::Error for LexError {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         return Some(self);
     }

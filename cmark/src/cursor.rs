@@ -1,13 +1,14 @@
 use std::error::Error;
 
-use super::{position::Position, token::Token, token_pointer::TokenPointer};
+use common::errors::ToError;
+
+use crate::{lex_error::LexError, position::Position, token::Token};
 
 #[derive(Debug, Clone)]
 pub struct Cursor {
     pub src: Vec<u8>,
     pub start: Position,
     pub end: Position,
-    pub tokens: TokenPointer,
 }
 
 impl Cursor {
@@ -16,7 +17,6 @@ impl Cursor {
             src,
             start: Position::default(),
             end: Position::default(),
-            tokens: TokenPointer::default(),
         };
     }
 
@@ -44,7 +44,20 @@ impl Cursor {
         return self.src[self.end.index];
     }
 
-    pub fn next(&mut self) -> u8 {
+    pub fn to_bytes(&self) -> &[u8] {
+        return &self.src[self.start.index..self.end.index];
+    }
+
+    pub fn create(&mut self, kind: u8) -> Token {
+        let token = Token::new(kind, self.start, self.end, Vec::from(self.to_bytes()));
+        return token;
+    }
+}
+
+impl Iterator for Cursor {
+    type Item = u8;
+
+    fn next(&mut self) -> Option<u8> {
         self.end.index += 1;
         self.end.col += 1;
 
@@ -53,20 +66,16 @@ impl Cursor {
             self.end.col = 0;
         }
 
-        return self.peek();
-    }
+        if self.peek() == 0 {
+            return None;
+        }
 
-    pub fn to_bytes(&self) -> &[u8] {
-        return &self.src[self.start.index..self.end.index];
+        return Some(self.peek());
     }
+}
 
-    pub fn to_error(&self, message: &str) -> Box<dyn Error> {
-        return Box::new(crate::error::Error::from_str(self.start, self.end, message));
-    }
-
-    pub fn create(&mut self, kind: u8) -> Token {
-        let token = Token::new(kind, self.start, self.end, Vec::from(self.to_bytes()));
-        self.tokens.next(token.clone());
-        return token;
+impl ToError for Cursor {
+    fn to_error(&self, message: &str) -> Box<dyn Error> {
+        return Box::new(LexError::from_str(self.start, self.end, message));
     }
 }
