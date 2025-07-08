@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter, Result};
+
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Kind {
@@ -16,14 +18,6 @@ impl Into<u8> for Kind {
     }
 }
 
-impl ToString for Kind {
-    fn to_string(&self) -> String {
-        return match self {
-            Kind::Eof => String::from("eof"),
-        };
-    }
-}
-
 impl From<u8> for Kind {
     fn from(value: u8) -> Self {
         return match value {
@@ -35,5 +29,15 @@ impl From<u8> for Kind {
 impl PartialEq<u8> for Kind {
     fn eq(&self, other: &u8) -> bool {
         return *self == Self::from(other.clone());
+    }
+}
+
+impl Display for Kind {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        let value = match self {
+            Kind::Eof => String::from("eof"),
+        };
+
+        return write!(f, "{}", value);
     }
 }
