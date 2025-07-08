@@ -1,12 +1,15 @@
 use std::borrow::Cow;
 
-use crate::{CMarkError, Render, html::Attributes};
+use crate::{
+    CMarkError, Render,
+    html::{Attributes, Node},
+};
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Element<'a> {
     pub selector: &'a str,
     pub attributes: Attributes<'a>,
-    pub children: Vec<&'a dyn Render>,
+    pub children: Vec<Node<'a>>,
 }
 
 impl<'a> Element<'a> {
@@ -42,11 +45,11 @@ impl<'a> Element<'a> {
         return self.children.len();
     }
 
-    pub fn push(&mut self, element: &'a dyn Render) {
+    pub fn push(&mut self, element: Node<'a>) {
         self.children.push(element);
     }
 
-    pub fn pop(&mut self) -> Option<&dyn Render> {
+    pub fn pop(&mut self) -> Option<Node> {
         return self.children.pop();
     }
 }
