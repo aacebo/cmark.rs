@@ -1,4 +1,4 @@
-use crate::{tokens::Token};
+use crate::tokens::Token;
 
 #[derive(Debug, Clone)]
 pub struct Iter {

@@ -6,3 +6,6 @@ pub use kind::*;
 
 mod iter;
 pub use iter::*;
+
+mod stream;
+pub use stream::*;

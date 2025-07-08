@@ -2,7 +2,11 @@ use std::error::Error;
 
 use common::errors::ToError;
 
-use crate::{parse_error::ParseError, position::Position, tokens::{self, Token}};
+use crate::{
+    parse_error::ParseError,
+    position::Position,
+    tokens::{self, Token},
+};
 
 #[derive(Debug, Clone)]
 pub struct Cursor {
