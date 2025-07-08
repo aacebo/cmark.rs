@@ -19,6 +19,9 @@ impl Position {
 
 impl ToString for Position {
     fn to_string(&self) -> String {
-        return format!("{}:{}", self.ln + 1, self.col + 1);
+        return match self.path {
+            Some(path) => format!("{}\n\t{}:{}", path, self.ln + 1, self.col + 1),
+            None => format!("{}:{}", self.ln + 1, self.col + 1),
+        };
     }
 }
