@@ -18,17 +18,17 @@ impl Into<u8> for Kind {
     }
 }
 
+impl PartialEq<u8> for Kind {
+    fn eq(&self, other: &u8) -> bool {
+        return *self == Self::from(other.clone());
+    }
+}
+
 impl From<u8> for Kind {
     fn from(value: u8) -> Self {
         return match value {
             _ => Kind::Eof,
         };
-    }
-}
-
-impl PartialEq<u8> for Kind {
-    fn eq(&self, other: &u8) -> bool {
-        return *self == Self::from(other.clone());
     }
 }
 
