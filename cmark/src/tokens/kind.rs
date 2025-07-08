@@ -10,6 +10,12 @@ impl Default for Kind {
     }
 }
 
+impl Into<u8> for Kind {
+    fn into(self) -> u8 {
+        return self as u8;
+    }
+}
+
 impl ToString for Kind {
     fn to_string(&self) -> String {
         return match self {
@@ -23,12 +29,6 @@ impl From<u8> for Kind {
         return match value {
             _ => Kind::Eof,
         };
-    }
-}
-
-impl Into<u8> for Kind {
-    fn into(self) -> u8 {
-        return self as u8;
     }
 }
 
