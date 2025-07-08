@@ -12,14 +12,6 @@ pub struct Cursor {
 }
 
 impl Cursor {
-    pub fn new(src: Vec<u8>) -> Self {
-        return Self {
-            src,
-            start: Position::default(),
-            end: Position::default(),
-        };
-    }
-
     pub fn is_sof(&self) -> bool {
         return self.start.index == 0;
     }
@@ -51,6 +43,16 @@ impl Cursor {
     pub fn create(&mut self, kind: tokens::Kind) -> Token {
         let token = Token::new(kind, self.start, self.end, Vec::from(self.to_bytes()));
         return token;
+    }
+}
+
+impl From<Vec<u8>> for Cursor {
+    fn from(src: Vec<u8>) -> Self {
+        return Self {
+            src,
+            start: Position::default(),
+            end: Position::default(),
+        };
     }
 }
 
