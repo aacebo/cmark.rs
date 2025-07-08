@@ -1,4 +1,4 @@
-use cmark::cursor::Cursor;
+use cmark::Cursor;
 
 #[test]
 fn should_be_sof() {

@@ -1,4 +1,4 @@
-use crate::parse_error::ParseError;
+use crate::ParseError;
 
 pub trait Render {
     fn render_into(&self, _writer: &mut dyn std::io::Write) -> Result<(), ParseError>;

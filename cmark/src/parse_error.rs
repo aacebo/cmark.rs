@@ -1,4 +1,4 @@
-use super::position::Position;
+use crate::Position;
 
 #[derive(Debug, Clone)]
 pub struct ParseError {

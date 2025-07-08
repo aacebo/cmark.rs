@@ -8,7 +8,7 @@ use crate::{
     tokens::{self, Kind, Token},
 };
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct Cursor {
     pub src: Vec<u8>,
     pub start: Position,

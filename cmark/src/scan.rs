@@ -1,9 +1,8 @@
-use crate::{parse_error::ParseError, tokens::Token};
+use crate::{ParseError, tokens::Token};
 
 pub trait Scan {
     fn prev(&self) -> Token;
     fn curr(&self) -> Token;
-    fn next(&self) -> bool;
     fn scan_next(&self) -> Result<Token, ParseError>;
 }
 
