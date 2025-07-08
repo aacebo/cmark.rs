@@ -1,5 +1,6 @@
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub struct Position {
+    pub path: Option<&'static str>,
     pub ln: usize,
     pub col: usize,
     pub index: usize,
@@ -8,6 +9,7 @@ pub struct Position {
 impl Position {
     pub fn new() -> Self {
         return Self {
+            path: None,
             ln: 0,
             col: 0,
             index: 0,
