@@ -1,6 +1,6 @@
 use common::errors::ToError;
 
-use crate::{lex_error::LexError, position::Position, tokens::Kind};
+use crate::{parse_error::ParseError, position::Position, tokens::Kind};
 
 #[derive(Debug, Clone, Default)]
 pub struct Token {
@@ -29,6 +29,6 @@ impl ToString for Token {
 
 impl ToError for Token {
     fn to_error(&self, message: &str) -> Box<dyn std::error::Error> {
-        return Box::new(LexError::from_str(self.start, self.end, message));
+        return Box::new(ParseError::from_str(self.start, self.end, message));
     }
 }

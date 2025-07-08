@@ -2,7 +2,7 @@ use std::error::Error;
 
 use common::errors::ToError;
 
-use crate::{lex_error::LexError, position::Position, tokens::{self, Token}};
+use crate::{parse_error::ParseError, position::Position, tokens::{self, Token}};
 
 #[derive(Debug, Clone)]
 pub struct Cursor {
@@ -76,6 +76,6 @@ impl Iterator for Cursor {
 
 impl ToError for Cursor {
     fn to_error(&self, message: &str) -> Box<dyn Error> {
-        return Box::new(LexError::from_str(self.start, self.end, message));
+        return Box::new(ParseError::from_str(self.start, self.end, message));
     }
 }
