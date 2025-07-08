@@ -5,7 +5,7 @@ use common::errors::ToError;
 use crate::{
     parse_error::ParseError,
     position::Position,
-    tokens::{self, Token},
+    tokens::{self, Kind, Token},
 };
 
 #[derive(Debug, Clone)]
@@ -26,7 +26,7 @@ impl Cursor {
 
     pub fn curr(&self) -> u8 {
         if self.start.index >= self.src.len() {
-            return 0;
+            return Kind::Eof.into();
         }
 
         return self.src[self.start.index];
@@ -34,7 +34,7 @@ impl Cursor {
 
     pub fn peek(&self) -> u8 {
         if self.is_eof() {
-            return 0;
+            return Kind::Eof.into();
         }
 
         return self.src[self.end.index];

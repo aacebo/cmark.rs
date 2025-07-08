@@ -1,3 +1,5 @@
+use std::fmt::Display;
+
 use crate::tokens::Token;
 
 #[derive(Debug, Clone)]
@@ -19,5 +21,11 @@ impl Default for Iter {
             prev: Token::default(),
             curr: Token::default(),
         };
+    }
+}
+
+impl Display for Iter {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        return write!(f, "prev => {}\ncurr => {}\n", self.prev, self.curr);
     }
 }
