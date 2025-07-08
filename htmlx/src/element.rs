@@ -26,7 +26,7 @@ pub trait Element: Sized {
 
 impl Element for () {
     fn render_into<W: Write>(&self, _writer: &mut W) -> Result {
-        Ok(())
+        return Ok(());
     }
 }
 
