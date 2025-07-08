@@ -1,7 +1,4 @@
-use std::{
-    error::Error,
-    fmt::{Result, Write},
-};
+use std::fmt::{Result, Write};
 
 use crate::esc;
 
@@ -9,10 +6,6 @@ use crate::esc;
 ///
 /// any element that can be rendered
 pub trait Element: Sized {
-    fn validate(&self) -> Option<&(dyn Error + 'static)> {
-        return None;
-    }
-
     fn render_into<W: Write>(&self, _writer: &mut W) -> Result {
         return Ok(());
     }
