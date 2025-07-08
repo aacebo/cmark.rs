@@ -1,4 +1,4 @@
-use crate::{CMarkError, Render, html::Element};
+use crate::{Render, html::Element};
 
 #[derive(Debug, Clone)]
 pub enum Node<'a> {
@@ -7,7 +7,7 @@ pub enum Node<'a> {
 }
 
 impl<'a> Render for Node<'a> {
-    fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), CMarkError> {
+    fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
         return match self {
             Node::Html(node) => node.render_into(writer),
             Node::Other(node) => node.render_into(writer),

@@ -1,7 +1,7 @@
 use std::borrow::Cow;
 
 use crate::{
-    CMarkError, Render,
+    Render,
     html::{Attributes, Node},
 };
 
@@ -55,7 +55,7 @@ impl<'a> Element<'a> {
 }
 
 impl<'a> Render for Element<'a> {
-    fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), CMarkError> {
+    fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
         write!(writer, "<{}", self.selector)?;
         self.attributes.render_into(writer)?;
 
