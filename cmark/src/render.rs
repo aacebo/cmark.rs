@@ -1,10 +1,10 @@
-use crate::ParseError;
+use crate::CMarkError;
 
 pub trait Render {
-    fn render_into(&self, _writer: &mut dyn std::io::Write) -> Result<(), ParseError>;
-    fn render(&self) -> Result<String, ParseError> {
-        let mut buf: Vec<u8> = vec![];
+    fn render_into(&self, _writer: &mut dyn std::fmt::Write) -> Result<(), CMarkError>;
+    fn render(&self) -> Result<String, CMarkError> {
+        let mut buf = String::new();
         self.render_into(&mut buf)?;
-        return Ok(String::from_utf8(buf).unwrap());
+        return Ok(buf);
     }
 }
