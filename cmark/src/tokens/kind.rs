@@ -3,12 +3,12 @@ use std::fmt::{Display, Formatter, Result};
 #[repr(u8)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Kind {
-    Eof,
+    Invalid,
 }
 
 impl Default for Kind {
     fn default() -> Self {
-        return Kind::Eof;
+        return Kind::Invalid;
     }
 }
 
@@ -27,7 +27,7 @@ impl PartialEq<u8> for Kind {
 impl From<u8> for Kind {
     fn from(value: u8) -> Self {
         return match value {
-            _ => Kind::Eof,
+            _ => Kind::Invalid,
         };
     }
 }
@@ -35,7 +35,7 @@ impl From<u8> for Kind {
 impl Display for Kind {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         let value = match self {
-            Kind::Eof => "<eof>",
+            Kind::Invalid => "<invalid>",
         };
 
         return write!(f, "{}", value);

@@ -21,6 +21,14 @@ impl Token {
             value,
         };
     }
+
+    pub fn len(&self) -> usize {
+        return self.value.len();
+    }
+
+    pub fn to_bytes(&self) -> Vec<u8> {
+        return self.value.clone();
+    }
 }
 
 impl ToError for Token {

@@ -1,6 +1,9 @@
 mod cursor;
 pub use cursor::*;
 
+mod iter;
+pub use iter::*;
+
 mod extension;
 pub use extension::*;
 
