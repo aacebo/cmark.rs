@@ -21,5 +21,6 @@ pub use render::*;
 
 pub mod html;
 pub mod markdown;
+pub mod render_primitives;
 pub mod tokens;
 pub mod tx;
