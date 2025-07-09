@@ -9,3 +9,6 @@ pub use iter::*;
 
 mod stream;
 pub use stream::*;
+
+mod scan;
+pub use scan::*;

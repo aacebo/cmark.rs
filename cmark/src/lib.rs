@@ -13,8 +13,6 @@ pub use parse_error::*;
 mod position;
 pub use position::*;
 
-pub mod scan;
-
 mod parse;
 pub use parse::*;
 
