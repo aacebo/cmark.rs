@@ -1,9 +1,14 @@
 use std::fmt::Display;
 
-use crate::tokens::Token;
+use crate::{ParseError, tokens::Token};
 
 pub trait ToStream {
-    fn to_stream(&self) -> Stream;
+    fn stream_into(&self, stream: &mut Stream) -> Result<(), ParseError>;
+    fn to_stream(&self) -> Result<Stream, ParseError> {
+        let mut stream = Stream::new();
+        self.stream_into(&mut stream)?;
+        return Ok(stream);
+    }
 }
 
 #[derive(Debug, Clone, Default)]
