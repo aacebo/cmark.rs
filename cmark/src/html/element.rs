@@ -63,10 +63,7 @@ impl<'a> Render for Element<'a> {
             return Ok(write!(writer, " />").unwrap());
         }
 
-        for child in self.children.iter() {
-            child.render_into(writer)?;
-        }
-
+        self.children.render_into(writer)?;
         write!(writer, "</{}>", self.selector)?;
         return Ok(());
     }
