@@ -1,10 +1,10 @@
-use crate::{Cursor, Parse, ParseError, extension::Extension, html::Node};
+use crate::{Cursor, Extension, Parse, ParseError, html};
 
 pub struct Markdown;
 
 impl Markdown {
     pub fn new() -> Self {
-        return Self {};
+        return Self;
     }
 }
 
@@ -17,7 +17,7 @@ impl Extension for Markdown {
         &self,
         _parser: Parser,
         _cursor: &mut Cursor,
-    ) -> Result<Node, ParseError> {
+    ) -> Result<html::Node, ParseError> {
         unimplemented!();
     }
 }
