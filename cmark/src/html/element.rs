@@ -1,6 +1,6 @@
 use crate::{
     Render,
-    html::{Attributes, Node},
+    html::{Attributes, Classes, Node},
 };
 
 #[derive(Debug, Clone)]
@@ -31,12 +31,46 @@ impl<'a> Element<'a> {
         };
     }
 
-    pub fn set_attr(&mut self, name: &'a str, value: &'a str) {
+    pub fn set_attr(&mut self, name: &'a str, value: String) {
         self.attributes.put(name, value);
     }
 
     pub fn del_attr(&mut self, name: &'a str) {
         self.attributes.del(name);
+    }
+
+    pub fn has_class(&self, name: &str) -> bool {
+        let classes = match self.attributes.try_get("class") {
+            None => Classes::new(),
+            Some(value) => Classes::from(value.to_string()),
+        };
+
+        return classes.contains(name);
+    }
+
+    pub fn add_class(&mut self, name: &str) -> bool {
+        let mut classes = match self.attributes.try_get("class") {
+            None => Classes::new(),
+            Some(value) => Classes::from(value.to_string()),
+        };
+
+        if !classes.add(name) {
+            return false;
+        }
+
+        self.attributes.put("class", classes.to_string());
+        return true;
+    }
+
+    pub fn del_class(&mut self, name: &str) -> bool {
+        let mut classes = match self.attributes.try_get("class") {
+            None => Classes::new(),
+            Some(value) => Classes::from(value.to_string()),
+        };
+
+        let added = classes.remove(name);
+        self.attributes.put("class", classes.to_string());
+        return added;
     }
 
     pub fn count(&self) -> usize {
