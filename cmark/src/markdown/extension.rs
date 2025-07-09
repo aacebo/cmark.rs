@@ -1,4 +1,4 @@
-use crate::{Parse, ParseError, Render, extension::Extension};
+use crate::{Cursor, Parse, ParseError, extension::Extension, html::Node};
 
 pub struct Markdown;
 
@@ -13,11 +13,7 @@ impl Extension for Markdown {
         return "markdown";
     }
 
-    fn parse(
-        &self,
-        _parser: Box<dyn Parse>,
-        _cursor: &mut crate::cursor::Cursor,
-    ) -> Result<Box<dyn Render>, ParseError> {
+    fn parse(&self, _parser: Box<dyn Parse>, _cursor: &mut Cursor) -> Result<Node, ParseError> {
         unimplemented!();
     }
 }

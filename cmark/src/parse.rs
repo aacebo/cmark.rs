@@ -1,5 +1,5 @@
-use crate::{Cursor, ParseError, Render};
+use crate::{Cursor, ParseError, html::Node};
 
 pub trait Parse {
-    fn parse(&self, cursor: &mut Cursor) -> Result<Box<dyn Render>, ParseError>;
+    fn parse(&self, cursor: &mut Cursor) -> Result<Node, ParseError>;
 }
