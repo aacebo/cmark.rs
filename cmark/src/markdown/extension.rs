@@ -13,7 +13,11 @@ impl Extension for Markdown {
         return "markdown";
     }
 
-    fn parse(&self, _parser: Box<dyn Parse>, _cursor: &mut Cursor) -> Result<Node, ParseError> {
+    fn parse<Parser: Parse>(
+        &self,
+        _parser: Parser,
+        _cursor: &mut Cursor,
+    ) -> Result<Node, ParseError> {
         unimplemented!();
     }
 }
