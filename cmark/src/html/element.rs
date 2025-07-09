@@ -1,5 +1,3 @@
-use std::borrow::Cow;
-
 use crate::{
     Render,
     html::{Attributes, Node},
@@ -34,7 +32,7 @@ impl<'a> Element<'a> {
     }
 
     pub fn set_attr(&mut self, name: &'a str, value: &'a str) {
-        self.attributes.put(name, Cow::from(value));
+        self.attributes.put(name, value);
     }
 
     pub fn del_attr(&mut self, name: &'a str) {
