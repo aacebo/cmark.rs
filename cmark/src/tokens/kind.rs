@@ -35,7 +35,7 @@ impl From<u8> for Kind {
 impl Display for Kind {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         let value = match self {
-            Kind::Eof => "eof",
+            Kind::Eof => "<eof>",
         };
 
         return write!(f, "{}", value);
