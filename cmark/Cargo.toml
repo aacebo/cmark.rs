@@ -6,4 +6,5 @@ edition = "2024"
 [lib]
 
 [dependencies]
+log = "0.4.27"
 common = { path = "../common" }

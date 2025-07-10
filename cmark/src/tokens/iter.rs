@@ -22,10 +22,14 @@ impl crate::Iter<Kind, Token> for Iter {
         return Some(self.prev.clone());
     }
 
-    fn next_or_err(&mut self, kind: Kind, err: &'_ str) -> Result<Token, ParseError> {
+    fn next_or_err(&mut self, kind: Kind) -> Result<Token, ParseError> {
         return match self.next_if(kind) {
             Some(token) => Ok(token),
-            None => Err(ParseError::from_str(self.prev.start, self.prev.end, err)),
+            None => Err(ParseError::from_str(
+                self.prev.start,
+                self.prev.end,
+                format!(r#"expected "{}", found "{}""#, kind, self.curr.kind).as_str(),
+            )),
         };
     }
 
@@ -71,10 +75,14 @@ impl crate::Iter<&'_ str, Token> for Iter {
         return Some(self.prev.clone());
     }
 
-    fn next_or_err(&mut self, key: &'_ str, err: &'_ str) -> Result<Token, ParseError> {
+    fn next_or_err(&mut self, key: &'_ str) -> Result<Token, ParseError> {
         return match self.next_if(key) {
             Some(token) => Ok(token),
-            None => Err(ParseError::from_str(self.prev.start, self.prev.end, err)),
+            None => Err(ParseError::from_str(
+                self.prev.start,
+                self.prev.end,
+                format!(r#"expected "{}", found "{}""#, key, self.curr).as_str(),
+            )),
         };
     }
 

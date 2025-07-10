@@ -1,4 +1,4 @@
-use crate::{ParseError, html};
+use crate::{ParseError, html, tokens::Iter};
 
 #[derive(Clone)]
 pub struct Parser;
@@ -17,6 +17,10 @@ impl Parser {
     }
 
     pub fn parse_dir(&self, _path: &'_ str) -> Result<html::Node, ParseError> {
+        unimplemented!()
+    }
+
+    pub(crate) fn _parse(&self, _iter: &mut Iter) -> Result<html::Node, ParseError> {
         unimplemented!()
     }
 }

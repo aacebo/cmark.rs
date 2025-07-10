@@ -1,5 +1,5 @@
-use crate::{ParseError, html, tokens::Iter};
+use crate::{ParseError, Parser, html, tokens::Iter};
 
 pub trait Parse {
-    fn parse(&self, iter: &mut Iter) -> Result<html::Node, ParseError>;
+    fn parse<'a>(&self, parser: &'a Parser, iter: &mut Iter) -> Result<html::Node<'a>, ParseError>;
 }
