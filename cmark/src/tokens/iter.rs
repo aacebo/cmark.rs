@@ -1,4 +1,4 @@
-use std::{cell::RefCell, fmt::Display, rc::Rc};
+use std::fmt::Display;
 
 use crate::{
     Cursor, ParseError,
@@ -9,17 +9,17 @@ use crate::{
 pub struct Iter {
     pub prev: Token,
     pub curr: Token,
-    pub cursor: Rc<RefCell<Cursor>>,
+    pub cursor: Cursor,
 }
 
 impl crate::Iter<Kind, Token> for Iter {
     fn next_if(&mut self, kind: Kind) -> Option<Token> {
-        if self.curr.kind == kind {
-            self.next();
-            return Some(self.prev.clone());
+        if self.curr.kind != kind {
+            return None;
         }
 
-        return None;
+        self.next();
+        return Some(self.prev.clone());
     }
 
     fn next_or_err(&mut self, kind: Kind, err: &'_ str) -> Result<Token, ParseError> {
@@ -38,20 +38,33 @@ impl crate::Iter<Kind, Token> for Iter {
 
         return i;
     }
+
+    fn next_until(&mut self, kind: Kind) -> i32 {
+        let mut i = 0;
+
+        while self.curr.kind != kind {
+            self.next();
+            i = i + 1;
+        }
+
+        return i;
+    }
+
+    fn next_n(&mut self, kind: Kind, n: i32) -> i32 {
+        let mut i = 0;
+
+        while self.next_if(kind).is_some() && i < n {
+            i = i + 1;
+        }
+
+        return i;
+    }
 }
 
 impl crate::Iter<&'_ str, Token> for Iter {
     fn next_if(&mut self, key: &'_ str) -> Option<Token> {
-        let bytes = key.as_bytes();
-
-        if bytes.len() != self.curr.len() {
+        if self.curr != key {
             return None;
-        }
-
-        for i in 0..key.len() {
-            if bytes[i] != self.curr.value[i] {
-                return None;
-            }
         }
 
         self.next();
@@ -74,10 +87,31 @@ impl crate::Iter<&'_ str, Token> for Iter {
 
         return i;
     }
+
+    fn next_until(&mut self, key: &'_ str) -> i32 {
+        let mut i = 0;
+
+        while self.curr != key {
+            self.next();
+            i = i + 1;
+        }
+
+        return i;
+    }
+
+    fn next_n(&mut self, key: &'_ str, n: i32) -> i32 {
+        let mut i = 0;
+
+        while self.next_if(key).is_some() && i < n {
+            i = i + 1;
+        }
+
+        return i;
+    }
 }
 
-impl From<Rc<RefCell<Cursor>>> for Iter {
-    fn from(cursor: Rc<RefCell<Cursor>>) -> Self {
+impl From<Cursor> for Iter {
+    fn from(cursor: Cursor) -> Self {
         let mut value = Self {
             prev: Token::default(),
             curr: Token::default(),
@@ -99,6 +133,8 @@ impl Iterator for Iter {
     type Item = Token;
 
     fn next(&mut self) -> Option<Token> {
+        self.cursor.start = self.cursor.end;
+        self.cursor.next();
         return None;
     }
 }

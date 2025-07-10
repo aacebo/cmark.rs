@@ -23,6 +23,7 @@ mod parser;
 pub use parser::*;
 
 pub mod html;
+pub mod parsers;
 pub mod render_primitives;
 pub mod tokens;
 pub mod tx;

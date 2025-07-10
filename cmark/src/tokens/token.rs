@@ -43,3 +43,21 @@ impl Display for Token {
         return write!(f, "{}", value);
     }
 }
+
+impl PartialEq<&'_ str> for Token {
+    fn eq(&self, other: &&'_ str) -> bool {
+        let bytes = other.as_bytes();
+
+        if bytes.len() != self.value.len() {
+            return false;
+        }
+
+        for i in 0..bytes.len() {
+            if bytes[i] != self.value[i] {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
