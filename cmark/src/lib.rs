@@ -4,9 +4,6 @@ pub use cursor::*;
 mod iter;
 pub use iter::*;
 
-mod extension;
-pub use extension::*;
-
 mod error;
 pub use error::*;
 
@@ -22,8 +19,10 @@ pub use parse::*;
 mod render;
 pub use render::*;
 
+mod parser;
+pub use parser::*;
+
 pub mod html;
-pub mod markdown;
 pub mod render_primitives;
 pub mod tokens;
 pub mod tx;

@@ -1,19 +1,18 @@
-use std::fmt::Display;
+use std::{cell::RefCell, fmt::Display, rc::Rc};
 
 use crate::{
-    ParseError,
-    tokens::{Kind, Scan, Token},
+    Cursor, ParseError,
+    tokens::{Kind, Token},
 };
 
 #[derive(Debug, Clone)]
-pub struct Iter<Scanner: Scan> {
+pub struct Iter {
     pub prev: Token,
     pub curr: Token,
-
-    scanner: Scanner,
+    pub cursor: Rc<RefCell<Cursor>>,
 }
 
-impl<Scanner: Scan> crate::Iter<Kind, Token> for Iter<Scanner> {
+impl crate::Iter<Kind, Token> for Iter {
     fn next_if(&mut self, kind: Kind) -> Option<Token> {
         if self.curr.kind == kind {
             self.next();
@@ -41,7 +40,7 @@ impl<Scanner: Scan> crate::Iter<Kind, Token> for Iter<Scanner> {
     }
 }
 
-impl<Scanner: Scan> crate::Iter<&'_ str, Token> for Iter<Scanner> {
+impl crate::Iter<&'_ str, Token> for Iter {
     fn next_if(&mut self, key: &'_ str) -> Option<Token> {
         let bytes = key.as_bytes();
 
@@ -77,12 +76,12 @@ impl<Scanner: Scan> crate::Iter<&'_ str, Token> for Iter<Scanner> {
     }
 }
 
-impl<Scanner: Scan> From<Scanner> for Iter<Scanner> {
-    fn from(scanner: Scanner) -> Self {
+impl From<Rc<RefCell<Cursor>>> for Iter {
+    fn from(cursor: Rc<RefCell<Cursor>>) -> Self {
         let mut value = Self {
             prev: Token::default(),
             curr: Token::default(),
-            scanner,
+            cursor,
         };
 
         value.next();
@@ -90,23 +89,16 @@ impl<Scanner: Scan> From<Scanner> for Iter<Scanner> {
     }
 }
 
-impl<Scanner: Scan> Iterator for Iter<Scanner> {
-    type Item = Token;
-
-    fn next(&mut self) -> Option<Token> {
-        return match self.scanner.scan() {
-            None => None,
-            Some(token) => {
-                self.prev = self.curr.clone();
-                self.curr = token.clone();
-                return Some(token);
-            }
-        };
+impl Display for Iter {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        return write!(f, "prev => {}\ncurr => {}\n", self.prev, self.curr);
     }
 }
 
-impl<Scanner: Scan> Display for Iter<Scanner> {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        return write!(f, "prev => {}\ncurr => {}\n", self.prev, self.curr);
+impl Iterator for Iter {
+    type Item = Token;
+
+    fn next(&mut self) -> Option<Token> {
+        return None;
     }
 }
