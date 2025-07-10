@@ -1,10 +1,6 @@
 use common::errors::ToError;
 
-use crate::{
-    parse_error::ParseError,
-    position::Position,
-    tokens::{self, Kind, Token},
-};
+use crate::{parse_error::ParseError, position::Position};
 
 #[derive(Debug, Clone, Default)]
 pub struct Cursor {
@@ -24,7 +20,7 @@ impl Cursor {
 
     pub fn curr(&self) -> u8 {
         if self.start.index >= self.src.len() {
-            return Kind::Eof.into();
+            return 0;
         }
 
         return self.src[self.start.index];
@@ -32,7 +28,7 @@ impl Cursor {
 
     pub fn peek(&self) -> u8 {
         if self.is_eof() {
-            return Kind::Eof.into();
+            return 0;
         }
 
         return self.src[self.end.index];
@@ -42,9 +38,15 @@ impl Cursor {
         return &self.src[self.start.index..self.end.index];
     }
 
-    pub fn create(&mut self, kind: tokens::Kind) -> Token {
-        let token = Token::new(kind, self.start, self.end, Vec::from(self.to_bytes()));
-        return token;
+    pub fn to_str(&self) -> Result<&str, ParseError> {
+        return match std::str::from_utf8(self.to_bytes()) {
+            Ok(v) => Ok(v),
+            Err(err) => Err(ParseError::from_string(
+                self.start,
+                self.end,
+                err.to_string(),
+            )),
+        };
     }
 }
 

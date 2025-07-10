@@ -1,8 +1,7 @@
 use std::fmt::Display;
 
 use crate::{
-    Cursor, ParseError,
-    tokens::{Kind, Token},
+    tokens::Token, Cursor, ParseError
 };
 
 #[derive(Debug, Clone)]
