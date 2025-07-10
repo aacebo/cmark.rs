@@ -31,9 +31,9 @@ impl Token {
     }
 }
 
-impl ToError for Token {
-    fn to_error(&self, message: &str) -> Box<dyn std::error::Error> {
-        return Box::new(ParseError::from_str(self.start, self.end, message));
+impl ToError<ParseError> for Token {
+    fn to_error(&self, message: &str) -> ParseError {
+        return ParseError::from_str(self.start, self.end, message);
     }
 }
 

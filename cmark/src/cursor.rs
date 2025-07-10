@@ -1,5 +1,3 @@
-use std::error::Error;
-
 use common::errors::ToError;
 
 use crate::{
@@ -80,8 +78,8 @@ impl Iterator for Cursor {
     }
 }
 
-impl ToError for Cursor {
-    fn to_error(&self, message: &str) -> Box<dyn Error> {
-        return Box::new(ParseError::from_str(self.start, self.end, message));
+impl ToError<ParseError> for Cursor {
+    fn to_error(&self, message: &str) -> ParseError {
+        return ParseError::from_str(self.start, self.end, message);
     }
 }
