@@ -27,11 +27,15 @@ impl Cursor {
     }
 
     pub fn peek(&self) -> u8 {
-        if self.is_eof() {
+        return self.peek_n(0);
+    }
+
+    pub fn peek_n(&self, n: usize) -> u8 {
+        if self.end.index + n >= self.src.len() {
             return 0;
         }
 
-        return self.src[self.end.index];
+        return self.src[self.end.index + n];
     }
 
     pub fn to_bytes(&self) -> &[u8] {

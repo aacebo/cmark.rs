@@ -1,98 +1,106 @@
-use std::{fmt, sync::Arc};
+use std::{fmt, fs, io, path::Path};
 
-use crate::tokens::Token;
+use crate::{Cursor, ParseError, tokens::Token};
 
-#[derive(Clone, Debug, Default)]
-pub struct Stream(Arc<Vec<Token>>);
+#[derive(Debug, Default, Clone)]
+pub struct Stream {
+    pub prev: Token,
+    pub curr: Token,
+    pub cursor: Cursor,
+}
 
 impl Stream {
-    pub fn new() -> Self {
-        return Self {
-            0: Arc::new(vec![]),
+    pub fn from_src(src: Vec<u8>) -> Self {
+        return Self::from(Cursor::from(src));
+    }
+
+    pub fn from_file(path: &Path) -> Result<Self, io::Error> {
+        return Ok(Self::from(Cursor::from(fs::read(path)?)));
+    }
+
+    pub fn next_if(&mut self, value: &'_ str) -> Option<Token> {
+        if self.curr != value {
+            return None;
+        }
+
+        self.next();
+        return Some(self.prev.clone());
+    }
+
+    pub fn next_or_err(&mut self, value: &'_ str) -> Result<Token, ParseError> {
+        return match self.next_if(value) {
+            Some(token) => Ok(token),
+            None => Err(ParseError::from_str(
+                self.prev.start(),
+                self.prev.end(),
+                format!(r#"expected "{}", found "{}""#, value, self.curr).as_str(),
+            )),
         };
     }
 
-    pub fn is_empty(&self) -> bool {
-        return self.0.is_empty();
-    }
+    pub fn next_while(&mut self, value: &'_ str) -> Vec<Token> {
+        let mut tokens: Vec<Token> = vec![];
 
-    pub fn len(&self) -> usize {
-        return self.0.len();
-    }
-
-    pub fn get(&self, index: usize) -> Option<&Token> {
-        return self.0.get(index);
-    }
-
-    pub fn iter(&self) -> Iter<'_> {
-        return Iter::new(self);
-    }
-
-    pub fn push(&mut self, token: Token) {
-        let tokens = Arc::make_mut(&mut self.0);
-        tokens.push(token);
-    }
-
-    pub fn append(&mut self, stream: Stream) {
-        let tokens = Arc::make_mut(&mut self.0);
-
-        for token in stream.iter() {
-            tokens.push(token.clone());
+        loop {
+            match self.next_if(value) {
+                Some(token) => tokens.push(token),
+                None => return tokens,
+            };
         }
     }
-}
 
-impl FromIterator<Token> for Stream {
-    fn from_iter<I: IntoIterator<Item = Token>>(iter: I) -> Self {
-        return Self {
-            0: Arc::new(iter.into_iter().collect::<Vec<Token>>()),
-        };
+    pub fn next_until(&mut self, value: &'_ str) -> Vec<Token> {
+        let mut tokens: Vec<Token> = vec![];
+
+        while self.curr != value {
+            match self.next() {
+                Some(token) => tokens.push(token),
+                None => return tokens,
+            };
+        }
+
+        return tokens;
+    }
+
+    pub fn next_n(&mut self, value: &'_ str, n: i32) -> Vec<Token> {
+        let mut tokens: Vec<Token> = vec![];
+
+        for _ in 0..n {
+            match self.next_if(value) {
+                Some(token) => tokens.push(token),
+                None => return tokens,
+            };
+        }
+
+        return tokens;
     }
 }
 
-impl Eq for Stream {}
+impl From<Cursor> for Stream {
+    fn from(cursor: Cursor) -> Self {
+        let mut value = Self {
+            prev: Token::default(),
+            curr: Token::default(),
+            cursor,
+        };
 
-impl PartialEq<Stream> for Stream {
-    fn eq(&self, other: &Stream) -> bool {
-        return self.iter().eq(other.iter());
+        value.next();
+        return value;
     }
 }
 
 impl fmt::Display for Stream {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut parts: Vec<String> = Vec::new();
-
-        for token in self.iter() {
-            parts.push(token.clone().to_string());
-        }
-
-        return write!(f, "{}", parts.join(""));
+        return write!(f, "prev => {}\ncurr => {}\n", self.prev, self.curr);
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct Iter<'t> {
-    stream: &'t Stream,
-    index: usize,
-}
+impl Iterator for Stream {
+    type Item = Token;
 
-impl<'t> Iter<'t> {
-    fn new(stream: &'t Stream) -> Self {
-        return Self { stream, index: 0 };
-    }
-
-    pub fn peek(&self) -> Option<&'t Token> {
-        return self.stream.0.get(self.index);
-    }
-}
-
-impl<'t> Iterator for Iter<'t> {
-    type Item = &'t Token;
-
-    fn next(&mut self) -> Option<&'t Token> {
-        return self.stream.0.get(self.index).map(|tree| {
-            self.index += 1;
-            tree
-        });
+    fn next(&mut self) -> Option<Token> {
+        self.cursor.start = self.cursor.end;
+        self.cursor.next();
+        return None;
     }
 }
