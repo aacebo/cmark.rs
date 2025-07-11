@@ -14,5 +14,6 @@ mod render;
 pub use render::*;
 
 pub mod html;
+pub mod parsing;
 pub mod tokens;
 pub mod tx;

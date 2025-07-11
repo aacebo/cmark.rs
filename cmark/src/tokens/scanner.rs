@@ -2,7 +2,7 @@ use std::fmt;
 
 use crate::{Cursor, ParseError, tokens::Token};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Default, Clone)]
 pub struct Scanner {
     pub prev: Token,
     pub curr: Token,
@@ -10,6 +10,10 @@ pub struct Scanner {
 }
 
 impl Scanner {
+    pub fn new(src: Vec<u8>) -> Self {
+        return Self::from(Cursor::from(src));
+    }
+
     pub fn next_if(&mut self, value: &'_ str) -> Option<Token> {
         if self.curr != value {
             return None;
