@@ -4,8 +4,21 @@ pub trait Parse: Sized {
     fn parse(cursor: &'static mut Cursor) -> Option<Self>;
 }
 
-macro_rules! define_literal_token {
+#[derive(Debug, Clone, PartialEq, Hash)]
+pub enum Token {
+    Decimal(super::Decimal),
+    Int(super::Int),
+    Text(super::Text),
+    Literal(Literal),
+}
+
+macro_rules! define_literal_tokens {
     ($($tokens:literal pub struct $name:ident)*) => {
+        #[derive(Debug, Clone, Copy, PartialEq, Hash)]
+        pub enum Literal {
+            $($name($name), )*
+        }
+
         $(
             #[doc = $tokens]
             #[derive(Debug, Clone, Copy, Default, PartialEq, Hash)]
@@ -46,7 +59,7 @@ macro_rules! define_literal_token {
     };
 }
 
-define_literal_token! {
+define_literal_tokens! {
     "\n" pub struct NewLine
     " " pub struct Space
     "\t" pub struct Tab
@@ -106,7 +119,7 @@ macro_rules! Token {
     [-] => { $crate::tokens::Dash };
     [_] => { $crate::tokens::Underscore };
     [~] => { $crate::tokens::Tilde };
-    [=] => {$crate::tokens::Equals };
+    [=] => { $crate::tokens::Equals };
     [==] => { $crate::tokens::EqualsEquals };
     [!=] => { $crate::tokens::NotEquals };
     [>] => { $crate::tokens::GreaterThan };
@@ -128,6 +141,3 @@ macro_rules! Token {
     [int] => { $crate::tokens::Int };
     [decimal] => { $crate::tokens::Decimal };
 }
-
-#[derive(Debug, Clone, Copy, PartialEq, Hash)]
-pub enum Token {}

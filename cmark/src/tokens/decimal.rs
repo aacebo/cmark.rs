@@ -1,19 +1,19 @@
 use crate::{Cursor, Position, tokens::Parse};
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Hash)]
-pub struct Decimal<'a> {
+#[derive(Debug, Clone, Default, PartialEq, Hash)]
+pub struct Decimal {
     pub start: Position,
     pub end: Position,
-    pub data: &'a [u8],
+    pub data: Box<[u8]>,
 }
 
-impl<'a> Decimal<'a> {
-    pub fn new(start: Position, end: Position, data: &'a [u8]) -> Self {
+impl Decimal {
+    pub fn new(start: Position, end: Position, data: Box<[u8]>) -> Self {
         return Self { start, end, data };
     }
 
     pub fn as_str(&self) -> &str {
-        return std::str::from_utf8(self.data).unwrap();
+        return std::str::from_utf8(&self.data).unwrap();
     }
 
     pub fn as_bytes(&self) -> &[u8] {
@@ -21,7 +21,7 @@ impl<'a> Decimal<'a> {
     }
 }
 
-impl<'a> Parse for Decimal<'a> {
+impl Parse for Decimal {
     fn parse(cursor: &'static mut Cursor) -> Option<Self> {
         if cursor.peek() < b'0' || cursor.peek() > b'9' {
             return None;
@@ -48,6 +48,6 @@ impl<'a> Parse for Decimal<'a> {
             Err(_) => return None,
         };
 
-        return Some(Self::new(cursor.start, cursor.end, value.as_bytes()));
+        return Some(Self::new(cursor.start, cursor.end, value.as_bytes().into()));
     }
 }

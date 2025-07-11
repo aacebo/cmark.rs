@@ -9,3 +9,6 @@ pub use decimal::*;
 
 mod int;
 pub use int::*;
+
+mod stream;
+pub use stream::*;

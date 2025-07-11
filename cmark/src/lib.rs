@@ -4,9 +4,6 @@ pub use cursor::*;
 mod iter;
 pub use iter::*;
 
-mod error;
-pub use error::*;
-
 mod parse_error;
 pub use parse_error::*;
 
