@@ -96,6 +96,8 @@ define_literal_tokens! {
     "&&" pub struct And
     "/" pub struct Slash
     "\\" pub struct BackSlash
+    "true" pub struct True
+    "false" pub struct False
 }
 
 #[macro_export]
@@ -140,4 +142,6 @@ macro_rules! Token {
     [text] => { $crate::tokens::Text };
     [int] => { $crate::tokens::Int };
     [decimal] => { $crate::tokens::Decimal };
+    [true] => { $crate::tokens::True };
+    [false] => { $crate::tokens::False };
 }
