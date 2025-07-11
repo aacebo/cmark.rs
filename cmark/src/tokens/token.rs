@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::{Cursor, Position};
 
 pub trait Parse: Sized {
@@ -6,10 +8,71 @@ pub trait Parse: Sized {
 
 #[derive(Debug, Clone, PartialEq, Hash)]
 pub enum Token {
+    Invalid,
     Decimal(super::Decimal),
     Int(super::Int),
     Text(super::Text),
     Literal(Literal),
+}
+
+impl Token {
+    pub fn start(&self) -> Position {
+        return match self {
+            Self::Invalid => Position::default(),
+            Self::Decimal(v) => v.start,
+            Self::Int(v) => v.start,
+            Self::Text(v) => v.start,
+            Self::Literal(v) => v.start(),
+        };
+    }
+
+    pub fn end(&self) -> Position {
+        return match self {
+            Self::Invalid => Position::default(),
+            Self::Decimal(v) => v.end,
+            Self::Int(v) => v.end,
+            Self::Text(v) => v.end,
+            Self::Literal(v) => v.end(),
+        };
+    }
+
+    pub fn as_str(&self) -> &str {
+        return match self {
+            Self::Invalid => "",
+            Self::Decimal(v) => v.as_str(),
+            Self::Int(v) => v.as_str(),
+            Self::Text(v) => v.as_str(),
+            Self::Literal(v) => v.as_str(),
+        };
+    }
+
+    pub fn as_bytes(&self) -> &[u8] {
+        return self.as_str().as_bytes();
+    }
+}
+
+impl fmt::Display for Token {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return match self {
+            Self::Invalid => write!(f, "<invalid>"),
+            Self::Decimal(v) => write!(f, "{}", v),
+            Self::Int(v) => write!(f, "{}", v),
+            Self::Text(v) => write!(f, "{}", v),
+            Self::Literal(v) => write!(f, "{}", v),
+        };
+    }
+}
+
+impl PartialEq<&str> for Token {
+    fn eq(&self, other: &&str) -> bool {
+        return self.as_str() == *other;
+    }
+}
+
+impl Default for Token {
+    fn default() -> Self {
+        return Self::Invalid;
+    }
 }
 
 macro_rules! define_literal_tokens {
@@ -17,6 +80,44 @@ macro_rules! define_literal_tokens {
         #[derive(Debug, Clone, Copy, PartialEq, Hash)]
         pub enum Literal {
             $($name($name), )*
+        }
+
+        impl Literal {
+            pub fn start(&self) -> Position {
+                return match self {
+                    $(Self::$name(v) => v.start, )*
+                };
+            }
+
+            pub fn end(&self) -> Position {
+                return match self {
+                    $(Self::$name(v) => v.end, )*
+                };
+            }
+
+            pub fn as_str(&self) -> &str {
+                return match self {
+                    $(Self::$name(v) => v.as_str(), )*
+                };
+            }
+
+            pub fn as_bytes(&self) -> &[u8] {
+                return self.as_str().as_bytes();
+            }
+        }
+
+        impl fmt::Display for Literal {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                return match self {
+                    $(Self::$name(v) => write!(f, "{}", v.as_str()), )*
+                };
+            }
+        }
+
+        impl PartialEq<&str> for Literal {
+            fn eq(&self, other: &&str) -> bool {
+                return self.as_str() == *other;
+            }
         }
 
         $(
@@ -53,6 +154,18 @@ macro_rules! define_literal_tokens {
                     }
 
                     return Some(Self::new(cursor.start, cursor.end));
+                }
+            }
+
+            impl fmt::Display for $name {
+                fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                    return write!(f, "{}", self.as_str());
+                }
+            }
+
+            impl PartialEq<&str> for $name {
+                fn eq(&self, other: &&str) -> bool {
+                    return self.as_str() == *other;
                 }
             }
         )*

@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::{Cursor, Position, tokens::Parse};
 
 #[derive(Debug, Clone, Default, PartialEq, Hash)]
@@ -49,5 +51,11 @@ impl Parse for Decimal {
         };
 
         return Some(Self::new(cursor.start, cursor.end, value.as_bytes().into()));
+    }
+}
+
+impl fmt::Display for Decimal {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return write!(f, "{}", self.as_str());
     }
 }

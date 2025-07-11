@@ -12,3 +12,6 @@ pub use int::*;
 
 mod stream;
 pub use stream::*;
+
+mod scanner;
+pub use scanner::*;

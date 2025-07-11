@@ -48,6 +48,18 @@ impl Cursor {
             )),
         };
     }
+
+    pub fn next_if(&mut self, value: &'_ str) -> bool {
+        for c in value.chars() {
+            if c != self.curr() as char {
+                return false;
+            }
+
+            self.next();
+        }
+
+        return true;
+    }
 }
 
 impl From<Vec<u8>> for Cursor {

@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::{fmt, sync::Arc};
 
 use crate::tokens::Token;
 
@@ -58,7 +58,19 @@ impl PartialEq<Stream> for Stream {
     }
 }
 
-#[derive(Clone)]
+impl fmt::Display for Stream {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let mut parts: Vec<String> = Vec::new();
+
+        for token in self.iter() {
+            parts.push(token.clone().to_string());
+        }
+
+        return write!(f, "{}", parts.join(""));
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Iter<'t> {
     stream: &'t Stream,
     index: usize,
