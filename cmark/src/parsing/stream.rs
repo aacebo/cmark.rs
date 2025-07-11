@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::{
-    Render,
+    ParseError, Render,
     html::{self, Node},
 };
 
@@ -37,6 +37,12 @@ impl<'a> Stream<'a> {
         for node in stream.iter() {
             self.0.push(node.clone());
         }
+    }
+
+    pub fn parse<T: Parse>(&mut self) -> Result<html::Node, ParseError> {
+        let node = T::parse(self)?;
+        self.push(node.clone());
+        return Ok(node);
     }
 }
 
@@ -101,4 +107,8 @@ impl<'t> Iterator for Iter<'t> {
             tree.clone()
         });
     }
+}
+
+pub trait Parse {
+    fn parse<'a>(stream: &mut Stream) -> Result<html::Node<'a>, ParseError>;
 }
