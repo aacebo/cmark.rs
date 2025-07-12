@@ -1,7 +1,7 @@
 use crate::{ParseError, html, token};
 
 #[derive(Debug, Clone, Copy)]
-pub struct Bold {}
+pub struct Bold;
 
 impl html::Parse for Bold {
     fn parse<'a>(stream: &mut html::Stream) -> Result<html::Node<'a>, ParseError> {
