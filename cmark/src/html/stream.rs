@@ -1,6 +1,6 @@
 use std::{fmt, io, path::Path};
 
-use crate::{ParseError, Render, html, tokens};
+use crate::{Iter, ParseError, Render, html, tokens};
 
 #[derive(Debug, Clone)]
 pub struct Stream<'a> {
@@ -29,10 +29,6 @@ impl<'a> Stream<'a> {
         return self.nodes.get(index);
     }
 
-    pub fn iter(&self) -> Iter<'_> {
-        return Iter::new(self);
-    }
-
     pub fn push(&mut self, node: html::Node<'a>) {
         self.nodes.push(node);
     }
@@ -48,29 +44,57 @@ impl<'a> Stream<'a> {
         self.push(node.clone());
         return Ok(node);
     }
+}
 
-    pub fn next(&mut self) -> Option<tokens::Token> {
+impl<'a> Iter<&str, tokens::Token> for Stream<'a> {
+    fn next(&mut self) -> Option<tokens::Token> {
         return self.tokens.next();
     }
 
-    pub fn next_if(&mut self, value: &'_ str) -> Option<tokens::Token> {
+    fn next_if(&mut self, value: &'_ str) -> Option<tokens::Token> {
         return self.tokens.next_if(value);
     }
 
-    pub fn next_or_err(&mut self, value: &'_ str) -> Result<tokens::Token, ParseError> {
+    fn next_or_err(&mut self, value: &'_ str) -> Result<tokens::Token, ParseError> {
         return self.tokens.next_or_err(value);
     }
 
-    pub fn next_while(&mut self, value: &'_ str) -> Vec<tokens::Token> {
+    fn next_while(&mut self, value: &'_ str) -> Vec<tokens::Token> {
         return self.tokens.next_while(value);
     }
 
-    pub fn next_until(&mut self, value: &'_ str) -> Vec<tokens::Token> {
+    fn next_until(&mut self, value: &'_ str) -> Vec<tokens::Token> {
         return self.tokens.next_until(value);
     }
 
-    pub fn next_n(&mut self, value: &'_ str, n: i32) -> Vec<tokens::Token> {
+    fn next_n(&mut self, value: &'_ str, n: i32) -> Vec<tokens::Token> {
         return self.tokens.next_n(value, n);
+    }
+}
+
+impl<'a> Iter<tokens::Token, tokens::Token> for Stream<'a> {
+    fn next(&mut self) -> Option<tokens::Token> {
+        return self.tokens.next();
+    }
+
+    fn next_if(&mut self, value: tokens::Token) -> Option<tokens::Token> {
+        return self.tokens.next_if(value.as_str());
+    }
+
+    fn next_or_err(&mut self, value: tokens::Token) -> Result<tokens::Token, ParseError> {
+        return self.tokens.next_or_err(value.as_str());
+    }
+
+    fn next_while(&mut self, value: tokens::Token) -> Vec<tokens::Token> {
+        return self.tokens.next_while(value.as_str());
+    }
+
+    fn next_until(&mut self, value: tokens::Token) -> Vec<tokens::Token> {
+        return self.tokens.next_until(value.as_str());
+    }
+
+    fn next_n(&mut self, value: tokens::Token, n: i32) -> Vec<tokens::Token> {
+        return self.tokens.next_n(value.as_str(), n);
     }
 }
 
@@ -78,7 +102,7 @@ impl<'a> Eq for Stream<'a> {}
 
 impl<'a> Render for Stream<'a> {
     fn render_into(&self, writer: &mut dyn fmt::Write) -> Result<(), fmt::Error> {
-        for node in self.iter() {
+        for node in self.nodes.iter() {
             node.render_into(writer)?;
         }
 
@@ -88,13 +112,13 @@ impl<'a> Render for Stream<'a> {
 
 impl<'a> PartialEq<Stream<'_>> for Stream<'a> {
     fn eq(&self, other: &Stream) -> bool {
-        return self.iter().eq(other.iter());
+        return self.nodes.iter().eq(other.nodes.iter());
     }
 }
 
 impl<'a> fmt::Display for Stream<'a> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for node in self.iter() {
+        for node in self.nodes.iter() {
             node.render_into(f)?;
         }
 
@@ -108,32 +132,5 @@ impl<'a> From<tokens::Stream> for Stream<'a> {
             tokens,
             nodes: vec![],
         };
-    }
-}
-
-#[derive(Debug, Clone)]
-pub struct Iter<'t> {
-    stream: &'t Stream<'t>,
-    index: usize,
-}
-
-impl<'t> Iter<'t> {
-    fn new(stream: &'t Stream<'t>) -> Self {
-        return Self { stream, index: 0 };
-    }
-
-    pub fn peek(&self) -> Option<&html::Node<'t>> {
-        return self.stream.nodes.get(self.index);
-    }
-}
-
-impl<'t> Iterator for Iter<'t> {
-    type Item = html::Node<'t>;
-
-    fn next(&mut self) -> Option<html::Node<'t>> {
-        return self.stream.nodes.get(self.index).map(|tree| {
-            self.index += 1;
-            tree.clone()
-        });
     }
 }

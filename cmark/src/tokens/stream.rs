@@ -1,6 +1,6 @@
 use std::{fmt, fs, io, path::Path};
 
-use crate::{Cursor, ParseError, tokens::Token};
+use crate::{Cursor, Iter, ParseError, tokens::Token};
 
 #[derive(Debug, Default, Clone)]
 pub struct Stream {
@@ -17,8 +17,16 @@ impl Stream {
     pub fn from_file(path: &Path) -> Result<Self, io::Error> {
         return Ok(Self::from(Cursor::from(fs::read(path)?)));
     }
+}
 
-    pub fn next_if(&mut self, value: &'_ str) -> Option<Token> {
+impl Iter<&str, Token> for Stream {
+    fn next(&mut self) -> Option<Token> {
+        self.cursor.start = self.cursor.end;
+        self.cursor.next();
+        return None;
+    }
+
+    fn next_if(&mut self, value: &'_ str) -> Option<Token> {
         if self.curr != value {
             return None;
         }
@@ -27,7 +35,7 @@ impl Stream {
         return Some(self.prev.clone());
     }
 
-    pub fn next_or_err(&mut self, value: &'_ str) -> Result<Token, ParseError> {
+    fn next_or_err(&mut self, value: &'_ str) -> Result<Token, ParseError> {
         return match self.next_if(value) {
             Some(token) => Ok(token),
             None => Err(ParseError::from_str(
@@ -38,7 +46,7 @@ impl Stream {
         };
     }
 
-    pub fn next_while(&mut self, value: &'_ str) -> Vec<Token> {
+    fn next_while(&mut self, value: &'_ str) -> Vec<Token> {
         let mut tokens: Vec<Token> = vec![];
 
         loop {
@@ -49,7 +57,7 @@ impl Stream {
         }
     }
 
-    pub fn next_until(&mut self, value: &'_ str) -> Vec<Token> {
+    fn next_until(&mut self, value: &'_ str) -> Vec<Token> {
         let mut tokens: Vec<Token> = vec![];
 
         while self.curr != value {
@@ -62,7 +70,7 @@ impl Stream {
         return tokens;
     }
 
-    pub fn next_n(&mut self, value: &'_ str, n: i32) -> Vec<Token> {
+    fn next_n(&mut self, value: &'_ str, n: i32) -> Vec<Token> {
         let mut tokens: Vec<Token> = vec![];
 
         for _ in 0..n {
@@ -92,15 +100,5 @@ impl From<Cursor> for Stream {
 impl fmt::Display for Stream {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         return write!(f, "prev => {}\ncurr => {}\n", self.prev, self.curr);
-    }
-}
-
-impl Iterator for Stream {
-    type Item = Token;
-
-    fn next(&mut self) -> Option<Token> {
-        self.cursor.start = self.cursor.end;
-        self.cursor.next();
-        return None;
     }
 }
