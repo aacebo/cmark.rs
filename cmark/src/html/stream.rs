@@ -61,7 +61,7 @@ impl Stream {
 
 impl From<Vec<u8>> for Stream {
     fn from(value: Vec<u8>) -> Self {
-        return Self::from(tokens::Stream::from_src(value));
+        return Self::from(tokens::Stream::from(value));
     }
 }
 
@@ -69,7 +69,7 @@ impl TryFrom<&Path> for Stream {
     type Error = io::Error;
 
     fn try_from(value: &Path) -> Result<Self, Self::Error> {
-        return Ok(Self::from(tokens::Stream::from_file(value)?));
+        return Ok(Self::from(tokens::Stream::try_from(value)?));
     }
 }
 

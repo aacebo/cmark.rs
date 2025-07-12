@@ -9,13 +9,17 @@ pub struct Stream {
     pub cursor: Cursor,
 }
 
-impl Stream {
-    pub fn from_src(src: Vec<u8>) -> Self {
-        return Self::from(Cursor::from(src));
+impl From<Vec<u8>> for Stream {
+    fn from(value: Vec<u8>) -> Self {
+        return Self::from(Cursor::from(value));
     }
+}
 
-    pub fn from_file(path: &Path) -> Result<Self, io::Error> {
-        return Ok(Self::from(Cursor::from(fs::read(path)?)));
+impl TryFrom<&Path> for Stream {
+    type Error = io::Error;
+
+    fn try_from(value: &Path) -> Result<Self, Self::Error> {
+        return Ok(Self::from(Cursor::from(fs::read(value)?)));
     }
 }
 
