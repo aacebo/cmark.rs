@@ -1,6 +1,6 @@
 use common::errors::ToError;
 
-use crate::{parse_error::ParseError, position::Position};
+use crate::{ParseError, Position};
 
 #[derive(Debug, Clone, Default)]
 pub struct Cursor {
