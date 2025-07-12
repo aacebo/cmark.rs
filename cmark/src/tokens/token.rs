@@ -144,12 +144,7 @@ macro_rules! define_literal_tokens {
 
             impl Parse for $name {
                 fn parse(cursor: &'_ mut Cursor) -> Option<Token> {
-                    let value = match cursor.to_str() {
-                        Ok(v) => v,
-                        Err(_) => return None,
-                    };
-
-                    if value != $tokens {
+                    if !cursor.next_if(stringify!($tokens)) {
                         return None;
                     }
 
