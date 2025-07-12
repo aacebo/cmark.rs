@@ -1,5 +1,7 @@
 use std::{fmt, io, path::Path};
 
+use common::errors::ToError;
+
 use crate::{Iter, ParseError, Render, html, tokens};
 
 #[derive(Debug, Clone)]
@@ -40,9 +42,28 @@ impl<'a> Stream<'a> {
     }
 
     pub fn parse<T: super::Parse>(&mut self) -> Result<html::Node, ParseError> {
-        let node = T::parse(self.clone())?;
+        let node = T::parse(self)?;
         self.push(node.clone());
         return Ok(node);
+    }
+
+    pub fn scan<T: tokens::Parse>(&mut self) -> Option<tokens::Token> {
+        return T::parse(&mut self.tokens.cursor);
+    }
+
+    pub fn scan_n<T: tokens::Parse>(&mut self, n: i32) -> bool {
+        for _ in 0..n {
+            match T::parse(&mut self.tokens.cursor) {
+                Some(_) => {}
+                None => return false,
+            };
+        }
+
+        return true;
+    }
+
+    pub fn err(&self, message: &'_ str) -> ParseError {
+        return self.tokens.cursor.to_error(message);
     }
 }
 

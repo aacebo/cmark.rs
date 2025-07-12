@@ -1,6 +1,9 @@
 use std::fmt;
 
-use crate::{Cursor, Position, tokens::Parse};
+use crate::{
+    Cursor, Position,
+    tokens::{Parse, Token},
+};
 
 #[derive(Debug, Clone, Default, PartialEq, Hash)]
 pub struct Decimal {
@@ -24,7 +27,7 @@ impl Decimal {
 }
 
 impl Parse for Decimal {
-    fn parse(cursor: &'static mut Cursor) -> Option<Self> {
+    fn parse(cursor: &'_ mut Cursor) -> Option<Token> {
         if cursor.peek() < b'0' || cursor.peek() > b'9' {
             return None;
         }
@@ -50,7 +53,11 @@ impl Parse for Decimal {
             Err(_) => return None,
         };
 
-        return Some(Self::new(cursor.start, cursor.end, value.as_bytes().into()));
+        return Some(Token::Decimal(Self::new(
+            cursor.start,
+            cursor.end,
+            value.as_bytes().into(),
+        )));
     }
 }
 

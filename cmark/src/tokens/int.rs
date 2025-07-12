@@ -1,6 +1,9 @@
 use std::fmt;
 
-use crate::{Cursor, Position, tokens::Parse};
+use crate::{
+    Cursor, Position,
+    tokens::{Parse, Token},
+};
 
 #[derive(Debug, Clone, Default, PartialEq, Hash)]
 pub struct Int {
@@ -24,7 +27,7 @@ impl Int {
 }
 
 impl Parse for Int {
-    fn parse(cursor: &'static mut Cursor) -> Option<Self> {
+    fn parse(cursor: &'_ mut Cursor) -> Option<Token> {
         if cursor.peek() < b'0' || cursor.peek() > b'9' {
             return None;
         }
@@ -38,7 +41,11 @@ impl Parse for Int {
             Err(_) => return None,
         };
 
-        return Some(Self::new(cursor.start, cursor.end, value.as_bytes().into()));
+        return Some(Token::Int(Self::new(
+            cursor.start,
+            cursor.end,
+            value.as_bytes().into(),
+        )));
     }
 }
 

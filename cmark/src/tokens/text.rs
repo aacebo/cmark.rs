@@ -1,6 +1,9 @@
 use std::fmt;
 
-use crate::{Cursor, Position, tokens::Parse};
+use crate::{
+    Cursor, Position,
+    tokens::{Parse, Token},
+};
 
 #[derive(Debug, Clone, Default, PartialEq, Hash)]
 pub struct Text {
@@ -24,7 +27,7 @@ impl Text {
 }
 
 impl Parse for Text {
-    fn parse(cursor: &'static mut Cursor) -> Option<Self> {
+    fn parse(cursor: &'_ mut Cursor) -> Option<Token> {
         while (cursor.peek() >= b'a' && cursor.peek() <= b'z')
             || (cursor.peek() >= b'A' && cursor.peek() <= b'Z')
         {
@@ -36,7 +39,11 @@ impl Parse for Text {
             Err(_) => return None,
         };
 
-        return Some(Self::new(cursor.start, cursor.end, value.as_bytes().into()));
+        return Some(Token::Text(Self::new(
+            cursor.start,
+            cursor.end,
+            value.as_bytes().into(),
+        )));
     }
 }
 

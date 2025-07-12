@@ -3,7 +3,7 @@ use std::fmt;
 use crate::{Cursor, Position};
 
 pub trait Parse: Sized {
-    fn parse(cursor: &'static mut Cursor) -> Option<Self>;
+    fn parse(cursor: &'_ mut Cursor) -> Option<Token>;
 }
 
 #[derive(Debug, Clone, PartialEq, Hash)]
@@ -143,7 +143,7 @@ macro_rules! define_literal_tokens {
             }
 
             impl Parse for $name {
-                fn parse(cursor: &'static mut Cursor) -> Option<Self> {
+                fn parse(cursor: &'_ mut Cursor) -> Option<Token> {
                     let value = match cursor.to_str() {
                         Ok(v) => v,
                         Err(_) => return None,
@@ -153,7 +153,7 @@ macro_rules! define_literal_tokens {
                         return None;
                     }
 
-                    return Some(Self::new(cursor.start, cursor.end));
+                    return Some(Token::Literal(Literal::$name(Self::new(cursor.start, cursor.end))));
                 }
             }
 
@@ -214,7 +214,7 @@ define_literal_tokens! {
 }
 
 #[macro_export]
-macro_rules! Token {
+macro_rules! token {
     ['\n'] => { $crate::tokens::NewLine };
     [' '] => { $crate::tokens::Space };
     ['\t'] => { $crate::tokens::Tab };
