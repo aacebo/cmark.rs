@@ -4,14 +4,17 @@ use crate::{ParseError, html, token};
 pub struct Bold;
 
 impl html::Parse for Bold {
-    fn parse<'a>(stream: &mut html::Stream) -> Result<html::Node<'a>, ParseError> {
-        let el = html::Element::new("strong");
+    fn parse(stream: &mut html::Stream) -> Result<html::Node, ParseError> {
+        let mut el = html::Element::new("strong");
 
         if !stream.scan_n::<token![*]>(2) {
             return Err(stream.err(r#"expected "**""#));
         }
 
-        while !stream.scan_n::<token![*]>(2) {}
+        while !stream.scan_n::<token![*]>(2) {
+            let node = stream.parse::<super::Inline>()?;
+            el.push(node);
+        }
 
         return Ok(html::Node::from(el));
     }

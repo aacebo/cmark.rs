@@ -1,28 +1,40 @@
-use std::fmt::{Result, Write};
+use std::fmt;
 
 use crate::{Render, html::Node};
 
 /// Raw
 ///
 /// raw html string
-#[derive(Debug, Clone, Copy)]
-pub struct Raw<'s>(&'s str);
+#[derive(Debug, Clone)]
+pub struct Raw(String);
 
-impl<'a> Raw<'a> {
+impl Raw {
     pub fn to_node(&self) -> Node {
         return Node::Raw(self.clone());
     }
 }
 
-impl<'s> From<&'s str> for Raw<'s> {
-    fn from(s: &'s str) -> Self {
-        return Self(s);
+impl From<&str> for Raw {
+    fn from(value: &str) -> Self {
+        return Self(value.to_string());
     }
 }
 
-impl<'s> Render for Raw<'s> {
-    fn render_into(&self, writer: &mut dyn Write) -> Result {
-        return write!(writer, "{}", self.0);
+impl From<String> for Raw {
+    fn from(value: String) -> Self {
+        return Self(value);
+    }
+}
+
+impl Render for Raw {
+    fn render_into(&self, writer: &mut dyn fmt::Write) -> fmt::Result {
+        return write!(writer, "{}", self);
+    }
+}
+
+impl fmt::Display for Raw {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return write!(f, "{}", self.0);
     }
 }
 

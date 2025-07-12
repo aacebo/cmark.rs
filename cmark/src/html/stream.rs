@@ -5,12 +5,12 @@ use common::errors::ToError;
 use crate::{Iter, ParseError, Render, html, tokens};
 
 #[derive(Debug, Clone)]
-pub struct Stream<'a> {
+pub struct Stream {
     tokens: tokens::Stream,
-    nodes: Vec<html::Node<'a>>,
+    nodes: Vec<html::Node>,
 }
 
-impl<'a> Stream<'a> {
+impl Stream {
     pub fn is_empty(&self) -> bool {
         return self.nodes.is_empty();
     }
@@ -19,15 +19,15 @@ impl<'a> Stream<'a> {
         return self.nodes.len();
     }
 
-    pub fn get(&self, index: usize) -> Option<&html::Node<'a>> {
+    pub fn get(&self, index: usize) -> Option<&html::Node> {
         return self.nodes.get(index);
     }
 
-    pub fn push(&mut self, node: html::Node<'a>) {
+    pub fn push(&mut self, node: html::Node) {
         self.nodes.push(node);
     }
 
-    pub fn append(&mut self, nodes: Vec<html::Node<'a>>) {
+    pub fn append(&mut self, nodes: Vec<html::Node>) {
         for node in nodes.iter() {
             self.nodes.push(node.clone());
         }
@@ -59,13 +59,13 @@ impl<'a> Stream<'a> {
     }
 }
 
-impl<'a> From<Vec<u8>> for Stream<'a> {
+impl From<Vec<u8>> for Stream {
     fn from(value: Vec<u8>) -> Self {
         return Self::from(tokens::Stream::from_src(value));
     }
 }
 
-impl<'a> TryFrom<&Path> for Stream<'a> {
+impl TryFrom<&Path> for Stream {
     type Error = io::Error;
 
     fn try_from(value: &Path) -> Result<Self, Self::Error> {
@@ -73,7 +73,7 @@ impl<'a> TryFrom<&Path> for Stream<'a> {
     }
 }
 
-impl<'a> From<tokens::Stream> for Stream<'a> {
+impl From<tokens::Stream> for Stream {
     fn from(tokens: tokens::Stream) -> Self {
         return Self {
             tokens,
@@ -82,7 +82,7 @@ impl<'a> From<tokens::Stream> for Stream<'a> {
     }
 }
 
-impl<'a> Iter<&str, tokens::Token> for Stream<'a> {
+impl Iter<&str, tokens::Token> for Stream {
     fn next(&mut self) -> Option<tokens::Token> {
         return self.tokens.next();
     }
@@ -108,7 +108,7 @@ impl<'a> Iter<&str, tokens::Token> for Stream<'a> {
     }
 }
 
-impl<'a> Iter<tokens::Token, tokens::Token> for Stream<'a> {
+impl Iter<tokens::Token, tokens::Token> for Stream {
     fn next(&mut self) -> Option<tokens::Token> {
         return self.tokens.next();
     }
@@ -134,9 +134,9 @@ impl<'a> Iter<tokens::Token, tokens::Token> for Stream<'a> {
     }
 }
 
-impl<'a> Eq for Stream<'a> {}
+impl Eq for Stream {}
 
-impl<'a> Render for Stream<'a> {
+impl Render for Stream {
     fn render_into(&self, writer: &mut dyn fmt::Write) -> Result<(), fmt::Error> {
         for node in self.nodes.iter() {
             node.render_into(writer)?;
@@ -146,13 +146,13 @@ impl<'a> Render for Stream<'a> {
     }
 }
 
-impl<'a> PartialEq<Stream<'_>> for Stream<'a> {
+impl PartialEq<Stream> for Stream {
     fn eq(&self, other: &Stream) -> bool {
         return self.nodes.iter().eq(other.nodes.iter());
     }
 }
 
-impl<'a> fmt::Display for Stream<'a> {
+impl fmt::Display for Stream {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         for node in self.nodes.iter() {
             node.render_into(f)?;

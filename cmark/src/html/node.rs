@@ -1,34 +1,36 @@
+use std::sync::Arc;
+
 use crate::{
     Render,
     html::{Element, Raw},
 };
 
 #[derive(Debug, Clone)]
-pub enum Node<'a> {
-    Element(Element<'a>),
-    Raw(Raw<'a>),
-    Other(&'a dyn Render),
+pub enum Node {
+    Element(Element),
+    Raw(Raw),
+    Other(Arc<dyn Render>),
 }
 
-impl<'a> From<Element<'a>> for Node<'a> {
-    fn from(value: Element<'a>) -> Self {
+impl From<Element> for Node {
+    fn from(value: Element) -> Self {
         return Self::Element(value);
     }
 }
 
-impl<'a> From<Raw<'a>> for Node<'a> {
-    fn from(value: Raw<'a>) -> Self {
+impl From<Raw> for Node {
+    fn from(value: Raw) -> Self {
         return Self::Raw(value);
     }
 }
 
-impl<'a> From<&'a dyn Render> for Node<'a> {
-    fn from(value: &'a dyn Render) -> Self {
+impl From<Arc<dyn Render>> for Node {
+    fn from(value: Arc<dyn Render>) -> Self {
         return Self::Other(value);
     }
 }
 
-impl<'a> Render for Node<'a> {
+impl Render for Node {
     fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
         return match self {
             Self::Element(node) => node.render_into(writer),
@@ -38,7 +40,7 @@ impl<'a> Render for Node<'a> {
     }
 }
 
-impl<'a> PartialEq for Node<'a> {
+impl PartialEq for Node {
     fn eq(&self, other: &Self) -> bool {
         return match self {
             Self::Element(node) => node.render() == other.render(),

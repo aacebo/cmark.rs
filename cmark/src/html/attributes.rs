@@ -5,9 +5,9 @@ use crate::{Render, html::esc};
 /// Attributes
 ///
 /// html element attributes
-pub type Attributes<'a> = Map<&'a str, String>;
+pub type Attributes = Map<String, String>;
 
-impl<'a> Render for Map<&'a str, String> {
+impl Render for Map<String, String> {
     fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
         for pair in self.iter() {
             write!(writer, " {}=\"", pair.key)?;
