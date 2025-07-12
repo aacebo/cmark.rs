@@ -1,6 +1,6 @@
 use std::{fmt, fs, io, path::Path};
 
-use crate::{Cursor, Iter, ParseError, tokens::Token};
+use crate::{Cursor, Iter, ParseError, tokens::*};
 
 #[derive(Debug, Default, Clone)]
 pub struct Stream {
@@ -22,8 +22,18 @@ impl Stream {
 impl Iter<&str, Token> for Stream {
     fn next(&mut self) -> Option<Token> {
         self.cursor.start = self.cursor.end;
-        self.cursor.next();
-        return None;
+        let byte = match self.cursor.next() {
+            Some(b) => b,
+            None => return None,
+        };
+
+        return match byte {
+            b' ' => Space::parse(&mut self.cursor),
+            b'\n' => NewLine::parse(&mut self.cursor),
+            b'\t' => Tab::parse(&mut self.cursor),
+            b':' => Colon::parse(&mut self.cursor),
+            _ => None,
+        };
     }
 
     fn next_if(&mut self, value: &'_ str) -> Option<Token> {

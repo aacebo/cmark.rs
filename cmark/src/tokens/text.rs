@@ -27,7 +27,7 @@ impl Text {
 }
 
 impl Parse for Text {
-    fn parse(cursor: &'_ mut Cursor) -> Option<Token> {
+    fn parse(cursor: &mut Cursor) -> Option<Token> {
         cursor.next_while_alpha();
 
         let value = match cursor.to_str() {
