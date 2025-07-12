@@ -10,5 +10,8 @@ pub use decimal::*;
 mod int;
 pub use int::*;
 
+mod literals;
+pub use literals::*;
+
 mod stream;
 pub use stream::*;

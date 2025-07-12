@@ -26,18 +26,8 @@ impl TryFrom<&Path> for Stream {
 impl Iter<&str, Token> for Stream {
     fn next(&mut self) -> Option<Token> {
         self.cursor.start = self.cursor.end;
-        let byte = match self.cursor.next() {
-            Some(b) => b,
-            None => return None,
-        };
-
-        return match byte {
-            b' ' => Space::parse(&mut self.cursor),
-            b'\n' => NewLine::parse(&mut self.cursor),
-            b'\t' => Tab::parse(&mut self.cursor),
-            b':' => Colon::parse(&mut self.cursor),
-            _ => None,
-        };
+        self.cursor.next();
+        return Token::parse(&mut self.cursor);
     }
 
     fn next_if(&mut self, value: &'_ str) -> Option<Token> {

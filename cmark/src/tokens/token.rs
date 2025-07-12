@@ -12,7 +12,7 @@ pub enum Token {
     Decimal(super::Decimal),
     Int(super::Int),
     Text(super::Text),
-    Literal(Literal),
+    Literal(super::Literal),
 }
 
 impl Token {
@@ -75,144 +75,32 @@ impl Default for Token {
     }
 }
 
-macro_rules! define_literal_tokens {
-    ($($tokens:literal pub struct $name:ident)*) => {
-        #[derive(Debug, Clone, Copy, PartialEq, Hash)]
-        pub enum Literal {
-            $($name($name), )*
-        }
+impl Parse for Token {
+    fn parse(cursor: &mut Cursor) -> Option<Token> {
+        match super::Literal::parse(cursor) {
+            None => {}
+            Some(token) => return Some(token),
+        };
 
-        impl Literal {
-            pub fn start(&self) -> Position {
-                return match self {
-                    $(Self::$name(v) => v.start, )*
-                };
-            }
+        match super::Decimal::parse(cursor) {
+            None => {}
+            Some(token) => return Some(token),
+        };
 
-            pub fn end(&self) -> Position {
-                return match self {
-                    $(Self::$name(v) => v.end, )*
-                };
-            }
+        match super::Int::parse(cursor) {
+            None => {}
+            Some(token) => return Some(token),
+        };
 
-            pub fn as_str(&self) -> &str {
-                return match self {
-                    $(Self::$name(v) => v.as_str(), )*
-                };
-            }
-
-            pub fn as_bytes(&self) -> &[u8] {
-                return self.as_str().as_bytes();
-            }
-        }
-
-        impl fmt::Display for Literal {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                return match self {
-                    $(Self::$name(v) => write!(f, "{}", v.as_str()), )*
-                };
-            }
-        }
-
-        impl PartialEq<&str> for Literal {
-            fn eq(&self, other: &&str) -> bool {
-                return self.as_str() == *other;
-            }
-        }
-
-        $(
-            #[doc = $tokens]
-            #[derive(Debug, Clone, Copy, Default, PartialEq, Hash)]
-            pub struct $name {
-                pub start: Position,
-                pub end: Position,
-            }
-
-            impl $name {
-                pub fn new(start: Position, end: Position) -> Self {
-                    return Self { start, end };
-                }
-
-                pub fn as_str(&self) -> &str {
-                    return stringify!($tokens);
-                }
-
-                pub fn as_bytes(&self) -> &[u8] {
-                    return self.as_str().as_bytes();
-                }
-            }
-
-            impl Parse for $name {
-                fn parse(cursor: &mut Cursor) -> Option<Token> {
-                    if !cursor.next_if(stringify!($tokens)) {
-                        return None;
-                    }
-
-                    return Some(Token::Literal(Literal::$name(Self::new(cursor.start, cursor.end))));
-                }
-            }
-
-            impl fmt::Display for $name {
-                fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                    return write!(f, "{}", self.as_str());
-                }
-            }
-
-            impl PartialEq<&str> for $name {
-                fn eq(&self, other: &&str) -> bool {
-                    return self.as_str() == *other;
-                }
-            }
-        )*
-    };
-}
-
-define_literal_tokens! {
-    "\n" pub struct NewLine
-    " " pub struct Space
-    "\t" pub struct Tab
-    ":" pub struct Colon
-    "!" pub struct Bang
-    "#" pub struct Hash
-    "@" pub struct At
-    "[" pub struct LeftBracket
-    "]" pub struct RightBracket
-    "(" pub struct LeftParen
-    ")" pub struct RightParen
-    "{" pub struct LeftBrace
-    "}" pub struct RightBrace
-    "*" pub struct Asterisk
-    "+" pub struct Plus
-    "%" pub struct Percent
-    "-" pub struct Dash
-    "_" pub struct Underscore
-    "~" pub struct Tilde
-    "=" pub struct Equals
-    "==" pub struct EqualsEquals
-    "!=" pub struct NotEquals
-    ">" pub struct GreaterThan
-    ">=" pub struct GreaterThanEquals
-    "<" pub struct LessThan
-    "<=" pub struct LessThanEquals
-    "'" pub struct Quote
-    "\"" pub struct DoubleQuote
-    "`" pub struct BackQuote
-    "." pub struct Period
-    "|" pub struct Pipe
-    "||" pub struct Or
-    "&" pub struct Ampersand
-    "&&" pub struct And
-    "/" pub struct Slash
-    "\\" pub struct BackSlash
-    "true" pub struct True
-    "false" pub struct False
+        return super::Text::parse(cursor);
+    }
 }
 
 #[macro_export]
 macro_rules! token {
-    ['\n'] => { $crate::tokens::NewLine };
-    [' '] => { $crate::tokens::Space };
-    ['\t'] => { $crate::tokens::Tab };
+    [newline] => { $crate::tokens::NewLine };
+    [space] => { $crate::tokens::Space };
+    [tab] => { $crate::tokens::Tab };
     [:] => { $crate::tokens::Colon };
     [!] => { $crate::tokens::Bang };
     [#] => { $crate::tokens::Hash };
