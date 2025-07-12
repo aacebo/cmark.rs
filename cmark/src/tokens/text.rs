@@ -28,11 +28,7 @@ impl Text {
 
 impl Parse for Text {
     fn parse(cursor: &'_ mut Cursor) -> Option<Token> {
-        while (cursor.peek() >= b'a' && cursor.peek() <= b'z')
-            || (cursor.peek() >= b'A' && cursor.peek() <= b'Z')
-        {
-            cursor.next();
-        }
+        cursor.next_while_alpha();
 
         let value = match cursor.to_str() {
             Ok(v) => v,

@@ -11,6 +11,8 @@ impl html::Parse for Bold {
             return Err(stream.err(r#"expected "**""#));
         }
 
+        while !stream.scan_n::<token![*]>(2) {}
+
         return Ok(html::Node::Element(el));
     }
 }

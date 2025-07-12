@@ -32,9 +32,7 @@ impl Parse for Int {
             return None;
         }
 
-        while cursor.peek() >= b'0' && cursor.peek() <= b'9' {
-            cursor.next();
-        }
+        cursor.next_while_num();
 
         let value = match cursor.to_str() {
             Ok(v) => v,

@@ -64,6 +64,30 @@ impl Cursor {
 
         return true;
     }
+
+    pub fn next_while_alpha(&mut self) -> u32 {
+        let mut i = 0;
+
+        while (self.peek() >= b'a' && self.peek() <= b'z')
+            || (self.peek() >= b'A' && self.peek() <= b'Z')
+        {
+            self.next();
+            i = i + 1;
+        }
+
+        return i;
+    }
+
+    pub fn next_while_num(&mut self) -> u32 {
+        let mut i = 0;
+
+        while self.peek() >= b'0' && self.peek() <= b'9' {
+            self.next();
+            i = i + 1;
+        }
+
+        return i;
+    }
 }
 
 impl From<Vec<u8>> for Cursor {

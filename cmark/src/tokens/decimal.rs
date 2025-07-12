@@ -32,9 +32,7 @@ impl Parse for Decimal {
             return None;
         }
 
-        while cursor.peek() >= b'0' && cursor.peek() <= b'9' {
-            cursor.next();
-        }
+        cursor.next_while_num();
 
         if cursor.peek() != b'.' {
             return None;
@@ -44,9 +42,7 @@ impl Parse for Decimal {
             return None;
         }
 
-        while cursor.peek() >= b'0' && cursor.peek() <= b'9' {
-            cursor.next();
-        }
+        cursor.next_while_num();
 
         let value = match cursor.to_str() {
             Ok(v) => v,
