@@ -13,6 +13,6 @@ impl html::Parse for Bold {
 
         while !stream.scan_n::<token![*]>(2) {}
 
-        return Ok(html::Node::Element(el));
+        return Ok(html::Node::from(el));
     }
 }

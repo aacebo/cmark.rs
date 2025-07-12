@@ -1,12 +1,18 @@
 use std::fmt::{Result, Write};
 
-use crate::Render;
+use crate::{Render, html::Node};
 
 /// Raw
 ///
 /// raw html string
 #[derive(Debug, Clone, Copy)]
 pub struct Raw<'s>(&'s str);
+
+impl<'a> Raw<'a> {
+    pub fn to_node(&self) -> Node {
+        return Node::Raw(self.clone());
+    }
+}
 
 impl<'s> From<&'s str> for Raw<'s> {
     fn from(s: &'s str) -> Self {

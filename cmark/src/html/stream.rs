@@ -11,14 +11,6 @@ pub struct Stream<'a> {
 }
 
 impl<'a> Stream<'a> {
-    pub fn from_src(src: Vec<u8>) -> Self {
-        return Self::from(tokens::Stream::from_src(src));
-    }
-
-    pub fn from_file(path: &Path) -> Result<Self, io::Error> {
-        return Ok(Self::from(tokens::Stream::from_file(path)?));
-    }
-
     pub fn is_empty(&self) -> bool {
         return self.nodes.is_empty();
     }
@@ -64,6 +56,29 @@ impl<'a> Stream<'a> {
 
     pub fn err(&self, message: &'_ str) -> ParseError {
         return self.tokens.cursor.to_error(message);
+    }
+}
+
+impl<'a> From<Vec<u8>> for Stream<'a> {
+    fn from(value: Vec<u8>) -> Self {
+        return Self::from(tokens::Stream::from_src(value));
+    }
+}
+
+impl<'a> TryFrom<&Path> for Stream<'a> {
+    type Error = io::Error;
+
+    fn try_from(value: &Path) -> Result<Self, Self::Error> {
+        return Ok(Self::from(tokens::Stream::from_file(value)?));
+    }
+}
+
+impl<'a> From<tokens::Stream> for Stream<'a> {
+    fn from(tokens: tokens::Stream) -> Self {
+        return Self {
+            tokens,
+            nodes: vec![],
+        };
     }
 }
 
@@ -144,14 +159,5 @@ impl<'a> fmt::Display for Stream<'a> {
         }
 
         return Ok(());
-    }
-}
-
-impl<'a> From<tokens::Stream> for Stream<'a> {
-    fn from(tokens: tokens::Stream) -> Self {
-        return Self {
-            tokens,
-            nodes: vec![],
-        };
     }
 }

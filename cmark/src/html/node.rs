@@ -10,6 +10,24 @@ pub enum Node<'a> {
     Other(&'a dyn Render),
 }
 
+impl<'a> From<Element<'a>> for Node<'a> {
+    fn from(value: Element<'a>) -> Self {
+        return Self::Element(value);
+    }
+}
+
+impl<'a> From<Raw<'a>> for Node<'a> {
+    fn from(value: Raw<'a>) -> Self {
+        return Self::Raw(value);
+    }
+}
+
+impl<'a> From<&'a dyn Render> for Node<'a> {
+    fn from(value: &'a dyn Render) -> Self {
+        return Self::Other(value);
+    }
+}
+
 impl<'a> Render for Node<'a> {
     fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
         return match self {
