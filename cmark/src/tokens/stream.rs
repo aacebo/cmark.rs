@@ -1,4 +1,4 @@
-use std::{fmt, fs, io, path::Path};
+use std::{fs, io, path::Path};
 
 use crate::{Cursor, Iter, ParseError, tokens::*};
 
@@ -106,11 +106,5 @@ impl From<Cursor> for Stream {
 
         value.next();
         return value;
-    }
-}
-
-impl fmt::Display for Stream {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        return write!(f, r#"prev = "{}", curr = "{}""#, self.prev, self.curr);
     }
 }
