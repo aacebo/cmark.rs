@@ -9,3 +9,6 @@ pub use bold::*;
 
 mod italic;
 pub use italic::*;
+
+mod break_line;
+pub use break_line::*;

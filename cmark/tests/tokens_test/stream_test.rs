@@ -32,12 +32,7 @@ pub fn should_parse() {
         stream
     );
 
-    debug_assert_eq!(
-        stream.next_if("test"),
-        None,
-        "5. stream => {:#?}",
-        stream
-    );
+    debug_assert_eq!(stream.next_if("test"), None, "5. stream => {:#?}", stream);
 
     debug_assert_eq!(
         stream.next_if("te").unwrap_or_default().as_str(),

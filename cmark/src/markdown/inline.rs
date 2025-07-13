@@ -13,6 +13,10 @@ impl html::Parse for Inline {
             return Ok(node);
         }
 
+        if let Ok(node) = BreakLine::parse(stream) {
+            return Ok(node);
+        }
+
         return Ok(html::Node::Element(html::Element::new("")));
     }
 }

@@ -11,6 +11,14 @@ pub struct Stream {
 }
 
 impl Stream {
+    pub fn curr(&self) -> tokens::Token {
+        return self.tokens.curr.clone();
+    }
+
+    pub fn prev(&self) -> tokens::Token {
+        return self.tokens.prev.clone();
+    }
+
     pub fn is_empty(&self) -> bool {
         return self.nodes.is_empty();
     }
