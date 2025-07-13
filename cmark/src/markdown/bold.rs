@@ -1,10 +1,10 @@
 use crate::{ParseError, html, token};
 
-#[derive(Debug, Clone, Copy)]
-pub struct Bold;
+#[derive(Debug, Clone)]
+pub struct Bold(html::Element);
 
-impl html::Parse for Bold {
-    fn parse(stream: &mut html::Stream) -> Result<html::Node, ParseError> {
+impl Bold {
+    pub fn parse(stream: &mut html::Stream) -> Result<html::Node, ParseError> {
         let mut el = html::Element::new("strong");
 
         if !stream.scan_n::<token![*]>(2) {
@@ -17,5 +17,9 @@ impl html::Parse for Bold {
         }
 
         return Ok(html::Node::from(el));
+    }
+
+    pub fn to_html(&self) -> html::Element {
+        return self.0.clone();
     }
 }

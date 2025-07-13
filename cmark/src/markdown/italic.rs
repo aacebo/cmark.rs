@@ -1,10 +1,10 @@
 use crate::{ParseError, html, token};
 
-#[derive(Debug, Clone, Copy)]
-pub struct Italic;
+#[derive(Debug, Clone)]
+pub struct Italic(html::Element);
 
-impl html::Parse for Italic {
-    fn parse(stream: &mut html::Stream) -> Result<html::Node, ParseError> {
+impl Italic {
+    pub fn parse(stream: &mut html::Stream) -> Result<html::Node, ParseError> {
         let mut el = html::Element::new("i");
 
         if !stream.scan::<token![*]>().is_some() {
@@ -17,5 +17,9 @@ impl html::Parse for Italic {
         }
 
         return Ok(html::Node::from(el));
+    }
+
+    pub fn to_html(&self) -> html::Element {
+        return self.0.clone();
     }
 }
