@@ -1,6 +1,6 @@
 use std::{fs, io, path::Path};
 
-use crate::{Cursor, Iter, ParseError, tokens::*};
+use crate::{Cursor, Iter, ParseError, Revert, tokens::*};
 
 #[derive(Debug, Default, Clone)]
 pub struct Stream {
@@ -106,5 +106,13 @@ impl From<Cursor> for Stream {
 
         value.next();
         return value;
+    }
+}
+
+impl Revert for Stream {
+    fn revert(&mut self, to: &mut Self) {
+        self.prev = to.prev.clone();
+        self.curr = to.curr.clone();
+        self.cursor.revert(&mut to.cursor);
     }
 }

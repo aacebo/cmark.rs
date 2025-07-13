@@ -2,7 +2,7 @@ use std::{fmt, io, path::Path};
 
 use common::errors::ToError;
 
-use crate::{Iter, ParseError, Render, html, tokens};
+use crate::{Iter, ParseError, Render, Revert, html, tokens};
 
 #[derive(Debug, Clone)]
 pub struct Stream {
@@ -173,5 +173,12 @@ impl fmt::Display for Stream {
         }
 
         return Ok(());
+    }
+}
+
+impl Revert for Stream {
+    fn revert(&mut self, to: &mut Self) {
+        self.tokens.revert(&mut to.tokens);
+        self.nodes = to.nodes.clone();
     }
 }

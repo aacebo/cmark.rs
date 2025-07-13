@@ -13,7 +13,9 @@ pub use position::*;
 mod render;
 pub use render::*;
 
+mod revert;
+pub use revert::*;
+
 pub mod html;
 pub mod markdown;
 pub mod tokens;
-pub mod tx;

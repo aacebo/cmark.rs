@@ -1,6 +1,6 @@
 use common::errors::ToError;
 
-use crate::{ParseError, Position};
+use crate::{ParseError, Position, Revert};
 
 #[derive(Debug, Clone, Default)]
 pub struct Cursor {
@@ -54,8 +54,11 @@ impl Cursor {
     }
 
     pub fn next_if(&mut self, value: &'_ str) -> bool {
+        let mut cursor = self.clone();
+
         for c in value.chars() {
             if c != self.peek() as char {
+                self.revert(&mut cursor);
                 return false;
             }
 
@@ -123,5 +126,12 @@ impl Iterator for Cursor {
 impl ToError<ParseError> for Cursor {
     fn to_error(&self, message: &str) -> ParseError {
         return ParseError::from_str(self.start, self.end, message);
+    }
+}
+
+impl Revert for Cursor {
+    fn revert(&mut self, to: &mut Self) {
+        self.start = to.start;
+        self.end = to.end;
     }
 }
