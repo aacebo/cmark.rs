@@ -2,7 +2,7 @@ use cmark::{Iter, tokens};
 
 #[test]
 pub fn should_parse() {
-    let mut stream = tokens::Stream::from("!>= test");
+    let mut stream = tokens::Stream::from("!>= te-st");
 
     debug_assert_eq!(
         stream.next_if("!").unwrap_or_default().as_str(),
@@ -33,9 +33,23 @@ pub fn should_parse() {
     );
 
     debug_assert_eq!(
-        stream.next_if("test").unwrap_or_default().as_str(),
-        "test",
+        stream.next_if("te").unwrap_or_default().as_str(),
+        "te",
         "5. stream => {:#?}",
+        stream
+    );
+
+    debug_assert_eq!(
+        stream.next_if("-").unwrap_or_default().as_str(),
+        "-",
+        "6. stream => {:#?}",
+        stream
+    );
+
+    debug_assert_eq!(
+        stream.next_if("st").unwrap_or_default().as_str(),
+        "st",
+        "7. stream => {:#?}",
         stream
     );
 }
