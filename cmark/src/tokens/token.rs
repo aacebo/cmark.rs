@@ -77,6 +77,10 @@ impl Default for Token {
 
 impl Parse for Token {
     fn parse(cursor: &mut Cursor) -> Option<Token> {
+        if cursor.is_eof() {
+            return None;
+        }
+
         match super::Literal::parse(cursor) {
             None => {}
             Some(token) => return Some(token),

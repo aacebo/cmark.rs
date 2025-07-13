@@ -49,6 +49,10 @@ macro_rules! define_literal_tokens {
 
         impl super::Parse for Literal {
             fn parse(cursor: &mut Cursor) -> Option<super::Token> {
+                if cursor.is_eof() {
+                    return None;
+                }
+
                 $(
                     match $name::parse(cursor) {
                         None => {},
@@ -74,7 +78,7 @@ macro_rules! define_literal_tokens {
                 }
 
                 pub fn as_str(&self) -> &str {
-                    return stringify!($tokens);
+                    return $tokens;
                 }
 
                 pub fn as_bytes(&self) -> &[u8] {
@@ -84,7 +88,11 @@ macro_rules! define_literal_tokens {
 
             impl super::Parse for $name {
                 fn parse(cursor: &mut Cursor) -> Option<super::Token> {
-                    if !cursor.next_if(stringify!($tokens)) {
+                    if cursor.is_eof() {
+                        return None;
+                    }
+
+                    if !cursor.next_if($tokens) {
                         return None;
                     }
 

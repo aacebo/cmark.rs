@@ -65,6 +65,12 @@ impl From<Vec<u8>> for Stream {
     }
 }
 
+impl From<&str> for Stream {
+    fn from(value: &str) -> Self {
+        return Self::from(tokens::Stream::from(value));
+    }
+}
+
 impl TryFrom<&Path> for Stream {
     type Error = io::Error;
 

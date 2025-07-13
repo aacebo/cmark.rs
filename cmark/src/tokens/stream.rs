@@ -15,6 +15,12 @@ impl From<Vec<u8>> for Stream {
     }
 }
 
+impl From<&str> for Stream {
+    fn from(value: &str) -> Self {
+        return Self::from(Cursor::from(value.as_bytes().to_vec()));
+    }
+}
+
 impl TryFrom<&Path> for Stream {
     type Error = io::Error;
 
@@ -26,8 +32,10 @@ impl TryFrom<&Path> for Stream {
 impl Iter<&str, Token> for Stream {
     fn next(&mut self) -> Option<Token> {
         self.cursor.start = self.cursor.end;
-        self.cursor.next();
-        return Token::parse(&mut self.cursor);
+        let token = Token::parse(&mut self.cursor)?;
+        self.prev = self.curr.clone();
+        self.curr = token.clone();
+        return Some(token);
     }
 
     fn next_if(&mut self, value: &'_ str) -> Option<Token> {
@@ -35,7 +43,7 @@ impl Iter<&str, Token> for Stream {
             return None;
         }
 
-        self.next();
+        self.next()?;
         return Some(self.prev.clone());
     }
 
@@ -103,6 +111,6 @@ impl From<Cursor> for Stream {
 
 impl fmt::Display for Stream {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        return write!(f, "prev => {}\ncurr => {}\n", self.prev, self.curr);
+        return write!(f, r#"prev = "{}", curr = "{}""#, self.prev, self.curr);
     }
 }

@@ -15,7 +15,7 @@ impl Cursor {
     }
 
     pub fn is_eof(&self) -> bool {
-        return self.end.index >= self.src.len();
+        return self.end.index > self.src.len();
     }
 
     pub fn curr(&self) -> u8 {
@@ -55,7 +55,7 @@ impl Cursor {
 
     pub fn next_if(&mut self, value: &'_ str) -> bool {
         for c in value.chars() {
-            if c != self.curr() as char {
+            if c != self.peek() as char {
                 return false;
             }
 
