@@ -54,7 +54,7 @@ impl Stream {
         return true;
     }
 
-    pub fn err(&self, message: &'_ str) -> ParseError {
+    pub fn err(&self, message: &str) -> ParseError {
         return self.tokens.cursor.to_error(message);
     }
 }

@@ -33,23 +33,30 @@ pub fn should_parse() {
     );
 
     debug_assert_eq!(
+        stream.next_if("test"),
+        None,
+        "5. stream => {:#?}",
+        stream
+    );
+
+    debug_assert_eq!(
         stream.next_if("te").unwrap_or_default().as_str(),
         "te",
-        "5. stream => {:#?}",
+        "6. stream => {:#?}",
         stream
     );
 
     debug_assert_eq!(
         stream.next_if("-").unwrap_or_default().as_str(),
         "-",
-        "6. stream => {:#?}",
+        "7. stream => {:#?}",
         stream
     );
 
     debug_assert_eq!(
         stream.next_if("st").unwrap_or_default().as_str(),
         "st",
-        "7. stream => {:#?}",
+        "8. stream => {:#?}",
         stream
     );
 }

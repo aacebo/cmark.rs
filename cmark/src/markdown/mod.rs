@@ -6,3 +6,6 @@ pub use inline::*;
 
 mod bold;
 pub use bold::*;
+
+mod italic;
+pub use italic::*;
