@@ -2,7 +2,9 @@ use std::{fmt, io, path::Path};
 
 use common::errors::ToError;
 
-use crate::{Iter, ParseError, ParseToken, Render, Revert, Token, TokenStream, html};
+use crate::{
+    Iter, ParseError, ParseOptions, ParseToken, Parser, Render, Revert, Token, TokenStream, html,
+};
 
 #[derive(Debug, Clone)]
 pub struct Stream {
@@ -41,8 +43,8 @@ impl Stream {
         }
     }
 
-    pub fn parse<T: super::Parse>(&mut self) -> Result<html::Node, ParseError> {
-        let node = T::parse(self)?;
+    pub fn parse<T: Parser>(&mut self, options: &ParseOptions) -> Result<html::Node, ParseError> {
+        let node = T::parse(self, options)?;
         self.push(node.clone());
         return Ok(node);
     }

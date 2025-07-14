@@ -2,6 +2,10 @@ use std::fmt;
 
 use crate::{Cursor, Position, markdown::MdToken};
 
+pub trait ParseToken: Sized {
+    fn parse(cursor: &mut Cursor) -> Option<Token>;
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Token {
     Invalid,
@@ -64,8 +68,4 @@ impl ParseToken for Token {
 
         return MdToken::parse(cursor);
     }
-}
-
-pub trait ParseToken: Sized {
-    fn parse(cursor: &mut Cursor) -> Option<Token>;
 }

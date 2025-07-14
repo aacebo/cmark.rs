@@ -25,6 +25,9 @@ pub use options::*;
 mod parser;
 pub use parser::*;
 
+mod stream;
+pub use stream::*;
+
 mod token;
 pub use token::*;
 

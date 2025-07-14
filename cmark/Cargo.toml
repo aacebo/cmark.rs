@@ -5,6 +5,10 @@ edition = "2024"
 
 [lib]
 
+[features]
+flow = []
+frontmatter = []
+
 [dependencies]
 log = "0.4.27"
 common = { path = "../common" }

@@ -1,17 +1,8 @@
-use crate::{Extension, ParseError, html};
+use crate::{ParseError, ParseOptions, Stream, html};
 
 pub type Result = std::result::Result<html::Node, ParseError>;
 
-pub struct Parser<'a> {
-    extensions: Vec<&'a dyn Extension>,
-}
-
-impl<'a> Parser<'a> {
-    pub fn new() -> Self {
-        return Self { extensions: vec![] };
-    }
-
-    pub fn extend(&mut self, extension: &'a dyn Extension) {
-        self.extensions.push(extension);
-    }
+pub trait Parser {
+    fn parse(stream: &mut Stream, options: &ParseOptions) -> Result;
+    fn parse_block(stream: &mut Stream, options: &ParseOptions) -> Result;
 }
