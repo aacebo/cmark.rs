@@ -16,6 +16,9 @@ pub use render::*;
 mod revert;
 pub use revert::*;
 
+mod extension;
+pub use extension::*;
+
 mod options;
 pub use options::*;
 
@@ -33,19 +36,3 @@ pub use token_stream::*;
 
 pub mod html;
 pub mod markdown;
-
-///
-/// Implementation
-///
-
-pub fn parse(_src: Vec<u8>, _options: &ParseOptions) -> Result {
-    unimplemented!();
-}
-
-pub fn parse_block(_stream: &mut Stream, _options: &ParseOptions) -> Result {
-    unimplemented!();
-}
-
-pub fn parse_inline(_stream: &mut Stream, _options: &ParseOptions) -> Result {
-    unimplemented!();
-}
