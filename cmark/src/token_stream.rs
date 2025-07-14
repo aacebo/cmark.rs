@@ -1,27 +1,27 @@
 use std::{fs, io, path::Path};
 
-use crate::{Cursor, Iter, ParseError, Revert, tokens::*};
+use crate::{Cursor, Iter, ParseError, ParseToken, Revert, Token};
 
 #[derive(Debug, Default, Clone)]
-pub struct Stream {
+pub struct TokenStream {
     pub prev: Token,
     pub curr: Token,
     pub cursor: Cursor,
 }
 
-impl From<Vec<u8>> for Stream {
+impl From<Vec<u8>> for TokenStream {
     fn from(value: Vec<u8>) -> Self {
         return Self::from(Cursor::from(value));
     }
 }
 
-impl From<&str> for Stream {
+impl From<&str> for TokenStream {
     fn from(value: &str) -> Self {
         return Self::from(Cursor::from(value.as_bytes().to_vec()));
     }
 }
 
-impl TryFrom<&Path> for Stream {
+impl TryFrom<&Path> for TokenStream {
     type Error = io::Error;
 
     fn try_from(value: &Path) -> Result<Self, Self::Error> {
@@ -29,7 +29,28 @@ impl TryFrom<&Path> for Stream {
     }
 }
 
-impl Iter<&str, Token> for Stream {
+impl From<Cursor> for TokenStream {
+    fn from(cursor: Cursor) -> Self {
+        let mut value = Self {
+            prev: Token::default(),
+            curr: Token::default(),
+            cursor,
+        };
+
+        value.next();
+        return value;
+    }
+}
+
+impl Revert for TokenStream {
+    fn revert(&mut self, to: &mut Self) {
+        self.prev = to.prev.clone();
+        self.curr = to.curr.clone();
+        self.cursor.revert(&mut to.cursor);
+    }
+}
+
+impl Iter<&str, Token> for TokenStream {
     fn next(&mut self) -> Option<Token> {
         self.cursor.start = self.cursor.end;
         let token = Token::parse(&mut self.cursor)?;
@@ -93,26 +114,5 @@ impl Iter<&str, Token> for Stream {
         }
 
         return tokens;
-    }
-}
-
-impl From<Cursor> for Stream {
-    fn from(cursor: Cursor) -> Self {
-        let mut value = Self {
-            prev: Token::default(),
-            curr: Token::default(),
-            cursor,
-        };
-
-        value.next();
-        return value;
-    }
-}
-
-impl Revert for Stream {
-    fn revert(&mut self, to: &mut Self) {
-        self.prev = to.prev.clone();
-        self.curr = to.curr.clone();
-        self.cursor.revert(&mut to.cursor);
     }
 }

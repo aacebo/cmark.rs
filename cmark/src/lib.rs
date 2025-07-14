@@ -16,6 +16,20 @@ pub use render::*;
 mod revert;
 pub use revert::*;
 
+mod extension;
+pub use extension::*;
+
+mod options;
+pub use options::*;
+
+mod parser;
+pub use parser::*;
+
+mod token;
+pub use token::*;
+
+mod token_stream;
+pub use token_stream::*;
+
 pub mod html;
 pub mod markdown;
-pub mod tokens;

@@ -1,7 +1,7 @@
 use crate::html::esc;
 
 pub trait Render: std::fmt::Debug {
-    fn render_into(&self, _writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error>;
+    fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error>;
     fn render(&self) -> Result<String, std::fmt::Error> {
         let mut buf = String::new();
         self.render_into(&mut buf)?;

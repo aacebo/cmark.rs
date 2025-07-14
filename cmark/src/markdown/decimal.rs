@@ -1,11 +1,8 @@
 use std::fmt;
 
-use crate::{
-    Cursor, Position,
-    tokens::{Parse, Token},
-};
+use crate::{Cursor, ParseToken, Position, Token, markdown::MdToken};
 
-#[derive(Debug, Clone, Default, PartialEq, Hash)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
 pub struct Decimal {
     pub start: Position,
     pub end: Position,
@@ -26,7 +23,7 @@ impl Decimal {
     }
 }
 
-impl Parse for Decimal {
+impl ParseToken for Decimal {
     fn parse(cursor: &mut Cursor) -> Option<Token> {
         if cursor.peek() < b'0' || cursor.peek() > b'9' {
             return None;
@@ -49,11 +46,11 @@ impl Parse for Decimal {
             Err(_) => return None,
         };
 
-        return Some(Token::Decimal(Self::new(
+        return Some(Token::Markdown(MdToken::Decimal(Self::new(
             cursor.start,
             cursor.end,
             value.as_bytes().into(),
-        )));
+        ))));
     }
 }
 

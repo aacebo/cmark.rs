@@ -1,10 +1,10 @@
 use std::fmt;
 
-use crate::{Cursor, Position};
+use crate::{Cursor, ParseToken, Position, Token};
 
 macro_rules! define_literal_tokens {
     ($($tokens:literal pub struct $name:ident)*) => {
-        #[derive(Debug, Clone, Copy, PartialEq, Hash)]
+        #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
         pub enum Literal {
             $($name($name), )*
         }
@@ -47,8 +47,8 @@ macro_rules! define_literal_tokens {
             }
         }
 
-        impl super::Parse for Literal {
-            fn parse(cursor: &mut Cursor) -> Option<super::Token> {
+        impl ParseToken for Literal {
+            fn parse(cursor: &mut Cursor) -> Option<Token> {
                 if cursor.is_eof() {
                     return None;
                 }
@@ -66,7 +66,7 @@ macro_rules! define_literal_tokens {
 
         $(
             #[doc = $tokens]
-            #[derive(Debug, Clone, Copy, Default, PartialEq, Hash)]
+            #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Hash)]
             pub struct $name {
                 pub start: Position,
                 pub end: Position,
@@ -86,8 +86,8 @@ macro_rules! define_literal_tokens {
                 }
             }
 
-            impl super::Parse for $name {
-                fn parse(cursor: &mut Cursor) -> Option<super::Token> {
+            impl ParseToken for $name {
+                fn parse(cursor: &mut Cursor) -> Option<Token> {
                     if cursor.is_eof() {
                         return None;
                     }
@@ -96,7 +96,13 @@ macro_rules! define_literal_tokens {
                         return None;
                     }
 
-                    return Some(super::Token::Literal(Literal::$name(Self::new(cursor.start, cursor.end))));
+                    return Some(
+                        Token::Markdown(
+                            super::MdToken::Literal(
+                                Literal::$name(Self::new(cursor.start, cursor.end))
+                            )
+                        )
+                    );
                 }
             }
 

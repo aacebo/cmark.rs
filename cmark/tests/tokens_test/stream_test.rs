@@ -1,8 +1,8 @@
-use cmark::{Iter, tokens};
+use cmark::{Iter, TokenStream};
 
 #[test]
 pub fn should_parse() {
-    let mut stream = tokens::Stream::from("!>= te-st");
+    let mut stream = TokenStream::from("!>= te-st");
 
     debug_assert_eq!(
         stream.next_if("!").unwrap_or_default().as_str(),

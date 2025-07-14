@@ -1,18 +1,15 @@
 use std::fmt;
 
-use crate::{
-    Cursor, Position,
-    tokens::{Parse, Token},
-};
+use crate::{Cursor, ParseToken, Position, Token, markdown::MdToken};
 
-#[derive(Debug, Clone, Default, PartialEq, Hash)]
-pub struct Int {
+#[derive(Debug, Clone, Default, PartialEq, Eq, Hash)]
+pub struct Text {
     pub start: Position,
     pub end: Position,
     pub data: Box<[u8]>,
 }
 
-impl Int {
+impl Text {
     pub fn new(start: Position, end: Position, data: Box<[u8]>) -> Self {
         return Self { start, end, data };
     }
@@ -26,28 +23,24 @@ impl Int {
     }
 }
 
-impl Parse for Int {
+impl ParseToken for Text {
     fn parse(cursor: &mut Cursor) -> Option<Token> {
-        if cursor.peek() < b'0' || cursor.peek() > b'9' {
-            return None;
-        }
-
-        cursor.next_while_num();
+        cursor.next_while_alpha();
 
         let value = match cursor.to_str() {
             Ok(v) => v,
             Err(_) => return None,
         };
 
-        return Some(Token::Int(Self::new(
+        return Some(Token::Markdown(MdToken::Text(Self::new(
             cursor.start,
             cursor.end,
             value.as_bytes().into(),
-        )));
+        ))));
     }
 }
 
-impl fmt::Display for Int {
+impl fmt::Display for Text {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         return write!(f, "{}", self.as_str());
     }

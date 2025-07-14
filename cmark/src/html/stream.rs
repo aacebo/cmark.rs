@@ -2,20 +2,20 @@ use std::{fmt, io, path::Path};
 
 use common::errors::ToError;
 
-use crate::{Iter, ParseError, Render, Revert, html, tokens};
+use crate::{Iter, ParseError, ParseToken, Render, Revert, Token, TokenStream, html};
 
 #[derive(Debug, Clone)]
 pub struct Stream {
-    tokens: tokens::Stream,
+    tokens: TokenStream,
     nodes: Vec<html::Node>,
 }
 
 impl Stream {
-    pub fn curr(&self) -> tokens::Token {
+    pub fn curr(&self) -> Token {
         return self.tokens.curr.clone();
     }
 
-    pub fn prev(&self) -> tokens::Token {
+    pub fn prev(&self) -> Token {
         return self.tokens.prev.clone();
     }
 
@@ -47,11 +47,11 @@ impl Stream {
         return Ok(node);
     }
 
-    pub fn scan<T: tokens::Parse>(&mut self) -> Option<tokens::Token> {
+    pub fn scan<T: ParseToken>(&mut self) -> Option<Token> {
         return T::parse(&mut self.tokens.cursor);
     }
 
-    pub fn scan_n<T: tokens::Parse>(&mut self, n: i32) -> bool {
+    pub fn scan_n<T: ParseToken>(&mut self, n: i32) -> bool {
         for _ in 0..n {
             match T::parse(&mut self.tokens.cursor) {
                 Some(_) => {}
@@ -69,13 +69,13 @@ impl Stream {
 
 impl From<Vec<u8>> for Stream {
     fn from(value: Vec<u8>) -> Self {
-        return Self::from(tokens::Stream::from(value));
+        return Self::from(TokenStream::from(value));
     }
 }
 
 impl From<&str> for Stream {
     fn from(value: &str) -> Self {
-        return Self::from(tokens::Stream::from(value));
+        return Self::from(TokenStream::from(value));
     }
 }
 
@@ -83,12 +83,12 @@ impl TryFrom<&Path> for Stream {
     type Error = io::Error;
 
     fn try_from(value: &Path) -> Result<Self, Self::Error> {
-        return Ok(Self::from(tokens::Stream::try_from(value)?));
+        return Ok(Self::from(TokenStream::try_from(value)?));
     }
 }
 
-impl From<tokens::Stream> for Stream {
-    fn from(tokens: tokens::Stream) -> Self {
+impl From<TokenStream> for Stream {
+    fn from(tokens: TokenStream) -> Self {
         return Self {
             tokens,
             nodes: vec![],
@@ -96,54 +96,54 @@ impl From<tokens::Stream> for Stream {
     }
 }
 
-impl Iter<&str, tokens::Token> for Stream {
-    fn next(&mut self) -> Option<tokens::Token> {
+impl Iter<&str, Token> for Stream {
+    fn next(&mut self) -> Option<Token> {
         return self.tokens.next();
     }
 
-    fn next_if(&mut self, value: &'_ str) -> Option<tokens::Token> {
+    fn next_if(&mut self, value: &'_ str) -> Option<Token> {
         return self.tokens.next_if(value);
     }
 
-    fn next_or_err(&mut self, value: &'_ str) -> Result<tokens::Token, ParseError> {
+    fn next_or_err(&mut self, value: &'_ str) -> Result<Token, ParseError> {
         return self.tokens.next_or_err(value);
     }
 
-    fn next_while(&mut self, value: &'_ str) -> Vec<tokens::Token> {
+    fn next_while(&mut self, value: &'_ str) -> Vec<Token> {
         return self.tokens.next_while(value);
     }
 
-    fn next_until(&mut self, value: &'_ str) -> Vec<tokens::Token> {
+    fn next_until(&mut self, value: &'_ str) -> Vec<Token> {
         return self.tokens.next_until(value);
     }
 
-    fn next_n(&mut self, value: &'_ str, n: i32) -> Vec<tokens::Token> {
+    fn next_n(&mut self, value: &'_ str, n: i32) -> Vec<Token> {
         return self.tokens.next_n(value, n);
     }
 }
 
-impl Iter<tokens::Token, tokens::Token> for Stream {
-    fn next(&mut self) -> Option<tokens::Token> {
+impl Iter<Token, Token> for Stream {
+    fn next(&mut self) -> Option<Token> {
         return self.tokens.next();
     }
 
-    fn next_if(&mut self, value: tokens::Token) -> Option<tokens::Token> {
+    fn next_if(&mut self, value: Token) -> Option<Token> {
         return self.tokens.next_if(value.as_str());
     }
 
-    fn next_or_err(&mut self, value: tokens::Token) -> Result<tokens::Token, ParseError> {
+    fn next_or_err(&mut self, value: Token) -> Result<Token, ParseError> {
         return self.tokens.next_or_err(value.as_str());
     }
 
-    fn next_while(&mut self, value: tokens::Token) -> Vec<tokens::Token> {
+    fn next_while(&mut self, value: Token) -> Vec<Token> {
         return self.tokens.next_while(value.as_str());
     }
 
-    fn next_until(&mut self, value: tokens::Token) -> Vec<tokens::Token> {
+    fn next_until(&mut self, value: Token) -> Vec<Token> {
         return self.tokens.next_until(value.as_str());
     }
 
-    fn next_n(&mut self, value: tokens::Token, n: i32) -> Vec<tokens::Token> {
+    fn next_n(&mut self, value: Token, n: i32) -> Vec<Token> {
         return self.tokens.next_n(value.as_str(), n);
     }
 }
