@@ -53,7 +53,7 @@ impl Cursor {
         };
     }
 
-    pub fn next_if(&mut self, value: &'_ str) -> bool {
+    pub fn next_if(&mut self, value: &str) -> bool {
         let mut cursor = self.clone();
 
         for c in value.chars() {
