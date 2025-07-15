@@ -15,7 +15,7 @@ pub use int::*;
 mod literals;
 pub use literals::*;
 
-use crate::{Extension, ParseOptions, Result, Stream};
+use crate::{Extension, ParseOptions, Result, Stream, html::ToHtml};
 
 #[derive(Debug, Clone, Copy)]
 pub struct Markdown;
@@ -31,11 +31,13 @@ impl Extension for Markdown {
         return "markdown";
     }
 
-    fn parse_block(&mut self, _stream: &mut Stream, _options: &ParseOptions) -> Result {
-        unimplemented!()
+    fn parse_block(&mut self, stream: &mut Stream, options: &ParseOptions) -> Result {
+        let node = ast::Block::parse(stream, options)?;
+        return Ok(node.to_html());
     }
 
-    fn parse_inline(&mut self, _stream: &mut Stream, _options: &ParseOptions) -> Result {
-        unimplemented!()
+    fn parse_inline(&mut self, stream: &mut Stream, options: &ParseOptions) -> Result {
+        let node = ast::Inline::parse(stream, options)?;
+        return Ok(node.to_html());
     }
 }
