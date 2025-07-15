@@ -12,3 +12,4 @@ frontmatter = []
 [dependencies]
 log = "0.4.27"
 common = { path = "../common" }
+cmark_macros = { path = "../cmark_macros" }

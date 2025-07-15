@@ -41,6 +41,34 @@ impl MdToken {
     pub fn as_bytes(&self) -> &[u8] {
         return self.as_str().as_bytes();
     }
+
+    pub fn is_decimal(&self) -> bool {
+        return match self {
+            Self::Decimal(_) => true,
+            _ => false,
+        };
+    }
+
+    pub fn is_int(&self) -> bool {
+        return match self {
+            Self::Int(_) => true,
+            _ => false,
+        };
+    }
+
+    pub fn is_text(&self) -> bool {
+        return match self {
+            Self::Text(_) => true,
+            _ => false,
+        };
+    }
+
+    pub fn is_literal(&self) -> bool {
+        return match self {
+            Self::Literal(_) => true,
+            _ => false,
+        };
+    }
 }
 
 impl fmt::Display for MdToken {

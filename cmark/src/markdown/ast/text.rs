@@ -1,8 +1,9 @@
 use std::fmt;
 
 use crate::{
-    ParseError, ParseOptions, Render, Stream,
+    ParseError, ParseOptions, Render, Stream, Token,
     html::{self, ToHtml},
+    markdown::MdToken,
 };
 
 #[derive(Debug, Clone)]
@@ -16,8 +17,13 @@ impl Text {
     pub fn parse(stream: &mut Stream, _options: &ParseOptions) -> Result<Self, ParseError> {
         let mut value = Self::new();
 
-        value.0 = html::Raw::from(stream.curr().as_str());
+        value.0.push(stream.curr().as_str());
         stream.next();
+
+        while let Token::Markdown(MdToken::Text(curr)) = stream.curr() {
+            value.0.push(curr.as_str());
+            stream.next();
+        }
 
         return Ok(value);
     }

@@ -3,7 +3,7 @@ use std::fmt;
 use crate::{Cursor, ParseToken, Position, Token};
 
 macro_rules! define_literal_tokens {
-    ($($tokens:literal pub struct $name:ident)*) => {
+    ($($tokens:literal $name:ident $method:ident)*) => {
         #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
         pub enum Literal {
             $($name($name), )*
@@ -31,6 +31,12 @@ macro_rules! define_literal_tokens {
             pub fn as_bytes(&self) -> &[u8] {
                 return self.as_str().as_bytes();
             }
+
+            $(
+                pub fn $method(&self) -> bool {
+                    return false;
+                }
+            )*
         }
 
         impl fmt::Display for Literal {
@@ -75,6 +81,10 @@ macro_rules! define_literal_tokens {
             impl $name {
                 pub fn new(start: Position, end: Position) -> Self {
                     return Self { start, end };
+                }
+
+                pub fn kind() -> &'static str {
+                    return $tokens;
                 }
 
                 pub fn as_str(&self) -> &str {
@@ -122,42 +132,42 @@ macro_rules! define_literal_tokens {
 }
 
 define_literal_tokens! {
-    "\n" pub struct NewLine
-    " " pub struct Space
-    "\t" pub struct Tab
-    ":" pub struct Colon
-    "!" pub struct Bang
-    "#" pub struct Hash
-    "@" pub struct At
-    "[" pub struct LeftBracket
-    "]" pub struct RightBracket
-    "(" pub struct LeftParen
-    ")" pub struct RightParen
-    "{" pub struct LeftBrace
-    "}" pub struct RightBrace
-    "*" pub struct Asterisk
-    "+" pub struct Plus
-    "%" pub struct Percent
-    "-" pub struct Dash
-    "_" pub struct Underscore
-    "~" pub struct Tilde
-    "=" pub struct Equals
-    "==" pub struct EqualsEquals
-    "!=" pub struct NotEquals
-    ">" pub struct GreaterThan
-    ">=" pub struct GreaterThanEquals
-    "<" pub struct LessThan
-    "<=" pub struct LessThanEquals
-    "'" pub struct Quote
-    "\"" pub struct DoubleQuote
-    "`" pub struct BackQuote
-    "." pub struct Period
-    "|" pub struct Pipe
-    "||" pub struct Or
-    "&" pub struct Ampersand
-    "&&" pub struct And
-    "/" pub struct Slash
-    "\\" pub struct BackSlash
-    "true" pub struct True
-    "false" pub struct False
+    "\n" NewLine is_newline
+    " " Space is_space
+    "\t" Tab is_tab
+    ":" Colon is_colon
+    "!" Bang is_bang
+    "#" Hash is_hash
+    "@" At is_at
+    "[" LeftBracket is_left_bracket
+    "]" RightBracket is_right_bracket
+    "(" LeftParen is_left_paren
+    ")" RightParen is_right_paren
+    "{" LeftBrace is_left_brace
+    "}" RightBrace is_right_brace
+    "*" Asterisk is_asterisk
+    "+" Plus is_plus
+    "%" Percent is_percent
+    "-" Dash is_dash
+    "_" Underscore is_underscore
+    "~" Tilde is_tilde
+    "=" Equals is_equals
+    "==" EqualsEquals is_equals_equals
+    "!=" NotEquals is_not_equals
+    ">" GreaterThan is_greater_than
+    ">=" GreaterThanEquals is_greater_than_equals
+    "<" LessThan is_less_than
+    "<=" LessThanEquals is_less_than_equals
+    "'" Quote is_quote
+    "\"" DoubleQuote is_double_quote
+    "`" BackQuote is_back_quote
+    "." Period is_period
+    "|" Pipe is_pipe
+    "||" Or is_or
+    "&" Ampersand is_ampersand
+    "&&" And is_and
+    "/" Slash is_slash
+    "\\" BackSlash is_back_slash
+    "true" True is_true
+    "false" False is_false
 }

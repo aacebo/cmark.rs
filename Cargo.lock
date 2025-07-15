@@ -6,8 +6,18 @@ version = 4
 name = "cmark"
 version = "0.1.0"
 dependencies = [
+ "cmark_macros",
  "common",
  "log",
+]
+
+[[package]]
+name = "cmark_macros"
+version = "0.1.0"
+dependencies = [
+ "cmark",
+ "quote",
+ "syn 2.0.104",
 ]
 
 [[package]]

@@ -43,6 +43,20 @@ impl Token {
     pub fn as_bytes(&self) -> &[u8] {
         return self.as_str().as_bytes();
     }
+
+    pub fn is_invalid(&self) -> bool {
+        return match self {
+            Self::Invalid => true,
+            _ => false,
+        };
+    }
+
+    pub fn is_markdown(&self) -> bool {
+        return match self {
+            Self::Markdown(_) => true,
+            _ => false,
+        };
+    }
 }
 
 impl fmt::Display for Token {
