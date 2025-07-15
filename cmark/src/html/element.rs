@@ -86,6 +86,10 @@ impl Element {
     pub fn pop(&mut self) -> Option<Node> {
         return self.children.pop();
     }
+
+    pub fn to_html(&self) -> Node {
+        return Node::Elem(self.clone());
+    }
 }
 
 impl Render for Element {

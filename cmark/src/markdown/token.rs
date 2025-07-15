@@ -86,7 +86,7 @@ impl ParseToken for MdToken {
 }
 
 #[macro_export]
-macro_rules! token {
+macro_rules! md_token {
     [newline] => { $crate::markdown::NewLine };
     [space] => { $crate::markdown::Space };
     [tab] => { $crate::markdown::Tab };

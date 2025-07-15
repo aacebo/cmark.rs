@@ -69,3 +69,8 @@ impl ParseToken for Token {
         return MdToken::parse(cursor);
     }
 }
+
+#[macro_export]
+macro_rules! token {
+    [md $($tokens:tt)*] => { $crate::md_token![$($tokens)*] };
+}

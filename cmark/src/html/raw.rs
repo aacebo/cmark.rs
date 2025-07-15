@@ -9,7 +9,15 @@ use crate::{Render, html::Node};
 pub struct Raw(String);
 
 impl Raw {
-    pub fn to_node(&self) -> Node {
+    pub fn new() -> Self {
+        return Self(String::from(""));
+    }
+
+    pub fn push(&mut self, value: &str) {
+        self.0.push_str(value);
+    }
+
+    pub fn to_html(&self) -> Node {
         return Node::Raw(self.clone());
     }
 }

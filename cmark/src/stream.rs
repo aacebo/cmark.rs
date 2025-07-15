@@ -53,7 +53,7 @@ impl Stream {
         return T::parse(&mut self.tokens.cursor);
     }
 
-    pub fn scan_n<T: ParseToken>(&mut self, n: i32) -> bool {
+    pub fn scan_n<T: ParseToken>(&mut self, n: u32) -> bool {
         for _ in 0..n {
             match T::parse(&mut self.tokens.cursor) {
                 Some(_) => {}
