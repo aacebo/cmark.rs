@@ -6,11 +6,20 @@ use crate::{
 };
 
 #[derive(Debug, Clone)]
-pub struct Text(Vec<super::Inline>);
+pub struct Text(html::Raw);
 
 impl Text {
-    pub fn parse(_stream: &mut Stream, _options: &ParseOptions) -> Result<Self, ParseError> {
-        unimplemented!()
+    pub fn new() -> Self {
+        return Self(html::Raw::new());
+    }
+
+    pub fn parse(stream: &mut Stream, _options: &ParseOptions) -> Result<Self, ParseError> {
+        let mut value = Self::new();
+
+        value.0 = html::Raw::from(stream.curr().as_str());
+        stream.next();
+
+        return Ok(value);
     }
 }
 
@@ -22,16 +31,7 @@ impl Render for Text {
 
 impl html::ToHtml for Text {
     fn to_html(&self) -> html::Node {
-        let mut el = html::Raw::new();
-
-        for child in self.0.iter() {
-            match child.render() {
-                Ok(v) => el.push(v.as_str()),
-                Err(_) => {}
-            };
-        }
-
-        return html::Node::Raw(el);
+        return html::Node::Raw(self.0.clone());
     }
 }
 

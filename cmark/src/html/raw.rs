@@ -46,6 +46,12 @@ impl fmt::Display for Raw {
     }
 }
 
+impl PartialEq<&str> for Raw {
+    fn eq(&self, other: &&str) -> bool {
+        return self.0.as_str() == *other;
+    }
+}
+
 #[macro_export]
 macro_rules! raw {
     ($text:expr) => {

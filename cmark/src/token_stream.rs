@@ -9,6 +9,16 @@ pub struct TokenStream {
     pub cursor: Cursor,
 }
 
+impl TokenStream {
+    pub fn next(&mut self) -> Option<Token> {
+        self.cursor.start = self.cursor.end;
+        let token = Token::parse(&mut self.cursor)?;
+        self.prev = self.curr.clone();
+        self.curr = token.clone();
+        return Some(token);
+    }
+}
+
 impl From<Vec<u8>> for TokenStream {
     fn from(value: Vec<u8>) -> Self {
         return Self::from(Cursor::from(value));
@@ -51,14 +61,6 @@ impl Revert for TokenStream {
 }
 
 impl Iter<&str, Token> for TokenStream {
-    fn next(&mut self) -> Option<Token> {
-        self.cursor.start = self.cursor.end;
-        let token = Token::parse(&mut self.cursor)?;
-        self.prev = self.curr.clone();
-        self.curr = token.clone();
-        return Some(token);
-    }
-
     fn next_if(&mut self, value: &'_ str) -> Option<Token> {
         if self.curr != value {
             return None;

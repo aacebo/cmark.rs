@@ -13,6 +13,10 @@ pub struct Stream {
 }
 
 impl Stream {
+    pub fn next(&mut self) -> Option<Token> {
+        return self.tokens.next();
+    }
+
     pub fn curr(&self) -> Token {
         return self.tokens.curr.clone();
     }
@@ -99,10 +103,6 @@ impl From<TokenStream> for Stream {
 }
 
 impl Iter<&str, Token> for Stream {
-    fn next(&mut self) -> Option<Token> {
-        return self.tokens.next();
-    }
-
     fn next_if(&mut self, value: &'_ str) -> Option<Token> {
         return self.tokens.next_if(value);
     }
@@ -125,10 +125,6 @@ impl Iter<&str, Token> for Stream {
 }
 
 impl Iter<Token, Token> for Stream {
-    fn next(&mut self) -> Option<Token> {
-        return self.tokens.next();
-    }
-
     fn next_if(&mut self, value: Token) -> Option<Token> {
         return self.tokens.next_if(value.as_str());
     }
