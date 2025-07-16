@@ -101,6 +101,7 @@ impl Render for Element {
             return Ok(write!(writer, " />").unwrap());
         }
 
+        write!(writer, ">")?;
         self.children.render_into(writer)?;
         write!(writer, "</{}>", self.selector)?;
         return Ok(());

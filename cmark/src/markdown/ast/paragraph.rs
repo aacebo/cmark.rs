@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::{
-    ParseError, ParseOptions, Render, Stream, Token,
+    ParseError, ParseOptions, Render, Stream,
     html::{self, ToHtml},
 };
 
@@ -20,11 +20,20 @@ impl Paragraph {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
         let mut value = Self::new();
 
-        while stream.curr() != Token::Invalid {
-            let node = super::Inline::parse(stream, options)?;
-            value.push(node);
+        while !stream.cursor().is_eof() {
+            match super::Inline::parse(stream, options) {
+                Ok(v) => value.push(v),
+                Err(err) => {
+                    if err.is_ignore() {
+                        break;
+                    }
+
+                    return Err(err);
+                }
+            };
         }
 
+        log::debug!(target: "md:paragraph", "parse");
         return Ok(value);
     }
 }
@@ -43,7 +52,7 @@ impl html::ToHtml for Paragraph {
             el.push(child.to_html());
         }
 
-        return html::Node::Elem(el);
+        return el.to_html();
     }
 }
 

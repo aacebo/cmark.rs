@@ -3,7 +3,8 @@ use std::{fmt, io, path::Path};
 use common::errors::ToError;
 
 use crate::{
-    Iter, ParseError, ParseOptions, ParseToken, Parser, Render, Revert, Token, TokenStream, html,
+    Cursor, Iter, ParseError, ParseOptions, ParseToken, Parser, Render, Revert, Token, TokenStream,
+    html,
 };
 
 #[derive(Debug, Clone)]
@@ -13,6 +14,14 @@ pub struct Stream {
 }
 
 impl Stream {
+    pub fn cursor(&self) -> &Cursor {
+        return &self.tokens.cursor;
+    }
+
+    pub fn tokens(&self) -> &TokenStream {
+        return &self.tokens;
+    }
+
     pub fn next(&mut self) -> Option<Token> {
         return self.tokens.next();
     }
@@ -48,20 +57,41 @@ impl Stream {
     }
 
     pub fn parse<T: Parser>(&mut self, options: &ParseOptions) -> Result<html::Node, ParseError> {
-        let node = T::parse(self, options)?;
+        let mut stream = self.clone();
+        let node = match T::parse(self, options) {
+            Ok(v) => v,
+            Err(err) => {
+                self.revert(&mut stream);
+                return Err(err);
+            }
+        };
+
         self.push(node.clone());
         return Ok(node);
     }
 
     pub fn scan<T: ParseToken>(&mut self) -> Option<Token> {
-        return T::parse(&mut self.tokens.cursor);
+        let mut copy = self.clone();
+
+        return match T::parse(&mut self.tokens.cursor) {
+            Some(v) => Some(v),
+            None => {
+                self.revert(&mut copy);
+                return None;
+            }
+        };
     }
 
     pub fn scan_n<T: ParseToken>(&mut self, n: u32) -> bool {
+        let mut stream = self.clone();
+
         for _ in 0..n {
             match T::parse(&mut self.tokens.cursor) {
                 Some(_) => {}
-                None => return false,
+                None => {
+                    self.revert(&mut stream);
+                    return false;
+                }
             };
         }
 
@@ -70,6 +100,14 @@ impl Stream {
 
     pub fn err(&self, message: &str) -> ParseError {
         return self.tokens.cursor.to_error(message);
+    }
+
+    pub fn eof(&self) -> ParseError {
+        return ParseError::eof(self.tokens.cursor.start, self.tokens.cursor.end);
+    }
+
+    pub fn ignore(&self) -> ParseError {
+        return ParseError::ignore(self.tokens.cursor.start, self.tokens.cursor.end);
     }
 }
 

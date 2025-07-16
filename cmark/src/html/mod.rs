@@ -1,6 +1,9 @@
 mod element;
 pub use element::*;
 
+mod fragment;
+pub use fragment::*;
+
 mod attributes;
 pub use attributes::*;
 

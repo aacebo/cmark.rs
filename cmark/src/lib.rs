@@ -34,29 +34,33 @@ pub use token::*;
 mod token_stream;
 pub use token_stream::*;
 
-use crate::html::ToHtml;
+use crate::{html::ToHtml, markdown::ast};
 
 pub mod html;
 pub mod markdown;
 
 pub fn parse(src: Vec<u8>, options: &ParseOptions) -> Result {
     let mut stream = Stream::from(src);
-    let mut el = html::Element::new("html");
+    let mut el = html::Fragment::new();
 
-    while stream.curr() != Token::Invalid {
-        let node = parse_block(&mut stream, options)?;
-        el.push(node);
+    while !stream.cursor().is_eof() {
+        match ast::Node::parse_block(&mut stream, options) {
+            Ok(node) => {
+                el.push(node.clone().to_html());
+            }
+            Err(err) => {
+                if err.is_eof() {
+                    break;
+                }
+
+                if err.is_ignore() {
+                    continue;
+                }
+
+                return Err(err);
+            }
+        };
     }
 
-    return Ok(html::Node::Elem(el));
-}
-
-pub fn parse_block(stream: &mut Stream, options: &ParseOptions) -> Result {
-    let node = markdown::ast::Block::parse(stream, options)?;
-    return Ok(node.to_html());
-}
-
-pub fn parse_inline(stream: &mut Stream, options: &ParseOptions) -> Result {
-    let node = markdown::ast::Inline::parse(stream, options)?;
-    return Ok(node.to_html());
+    return Ok(el.to_html());
 }

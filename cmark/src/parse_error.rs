@@ -8,6 +8,22 @@ pub struct ParseError {
 }
 
 impl ParseError {
+    pub fn eof(start: Position, end: Position) -> Self {
+        return Self {
+            start,
+            end,
+            message: String::from("<eof>"),
+        };
+    }
+
+    pub fn ignore(start: Position, end: Position) -> Self {
+        return Self {
+            start,
+            end,
+            message: String::from("<ignore>"),
+        };
+    }
+
     pub fn from_str(start: Position, end: Position, message: &str) -> Self {
         return Self {
             start,
@@ -22,6 +38,14 @@ impl ParseError {
             end,
             message,
         };
+    }
+
+    pub fn is_eof(&self) -> bool {
+        return self.message == "<eof>";
+    }
+
+    pub fn is_ignore(&self) -> bool {
+        return self.message == "<ignore>";
     }
 }
 

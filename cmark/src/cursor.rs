@@ -15,7 +15,7 @@ impl Cursor {
     }
 
     pub fn is_eof(&self) -> bool {
-        return self.end.index > self.src.len();
+        return self.end.index >= self.src.len();
     }
 
     pub fn curr(&self) -> u8 {

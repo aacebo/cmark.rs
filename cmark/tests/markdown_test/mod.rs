@@ -38,7 +38,6 @@ fn test_file(path: &Path) -> Result<(), io::Error> {
 
     let mut html_path = trim_suffix(path, ".md");
     html_path.set_extension("html");
-    println!("{}", html_path.display());
 
     let md = fs::read(path)?;
     let html = fs::read_to_string(html_path)?;
@@ -52,7 +51,6 @@ fn test_file(path: &Path) -> Result<(), io::Error> {
         Err(err) => panic!("{}", err),
     };
 
-    println!("{}\n{}", String::from_utf8(md).unwrap(), html);
     assert_eq!(html, rendered);
     return Ok(());
 }
@@ -65,6 +63,8 @@ fn trim_suffix(path: &Path, suffix: &str) -> PathBuf {
 
 #[test]
 pub fn main() -> Result<(), io::Error> {
+    colog::init();
+    log::debug!(target: "test", "hi");
     let cwd = std::env::current_dir()?;
     return test_dir(&cwd.join(&Path::new("tests/markdown_test/testcases").iter().as_path()));
 }

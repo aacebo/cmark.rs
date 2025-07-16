@@ -17,9 +17,10 @@ impl BreakLine {
     pub fn parse(stream: &mut Stream, _options: &ParseOptions) -> Result<Self, ParseError> {
         if !(stream.scan_n::<md_token![space]>(2) && stream.scan::<md_token![newline]>().is_some())
         {
-            return Err(stream.err("expected two spaces and a newline"));
+            return Err(stream.ignore());
         }
 
+        log::debug!(target: "md:break_line", "parse");
         return Ok(Self::new());
     }
 }
@@ -32,7 +33,7 @@ impl Render for BreakLine {
 
 impl html::ToHtml for BreakLine {
     fn to_html(&self) -> html::Node {
-        return html::Node::Elem(html::Element::new("br"));
+        return html::Element::new("br").to_html();
     }
 }
 

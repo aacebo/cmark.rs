@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{ParseError, ParseOptions, Render, Stream, html};
+use crate::{ParseError, ParseOptions, Render, Revert, Stream, html};
 
 #[derive(Debug, Clone)]
 pub enum Block {
@@ -10,9 +10,18 @@ pub enum Block {
 
 impl Block {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
+        if stream.cursor().is_eof() {
+            return Err(stream.eof());
+        }
+
+        log::debug!(target: "md:block", "parse");
+        let mut copy = stream.clone();
+
         if let Ok(v) = super::BlockQuote::parse(stream, options) {
             return Ok(Self::BlockQuote(v));
         }
+
+        stream.revert(&mut copy);
 
         return match super::Paragraph::parse(stream, options) {
             Ok(v) => Ok(Self::Paragraph(v)),

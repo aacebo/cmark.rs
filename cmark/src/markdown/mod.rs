@@ -32,11 +32,19 @@ impl Extension for Markdown {
     }
 
     fn parse_block(&mut self, stream: &mut Stream, options: &ParseOptions) -> Result {
+        if stream.cursor().is_eof() {
+            return Err(stream.eof());
+        }
+
         let node = ast::Block::parse(stream, options)?;
         return Ok(node.to_html());
     }
 
     fn parse_inline(&mut self, stream: &mut Stream, options: &ParseOptions) -> Result {
+        if stream.cursor().is_eof() {
+            return Err(stream.eof());
+        }
+
         let node = ast::Inline::parse(stream, options)?;
         return Ok(node.to_html());
     }

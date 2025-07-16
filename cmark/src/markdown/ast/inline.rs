@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{ParseError, ParseOptions, Render, Stream, html};
+use crate::{ParseError, ParseOptions, Render, Revert, Stream, html};
 
 #[derive(Debug, Clone)]
 pub enum Inline {
@@ -11,13 +11,24 @@ pub enum Inline {
 
 impl Inline {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
+        if stream.cursor().is_eof() {
+            return Err(stream.eof());
+        }
+
+        log::debug!(target: "md:inline", "parse");
+        let mut copy = stream.clone();
+
         if let Ok(v) = super::Bold::parse(stream, options) {
             return Ok(Self::Bold(v));
         }
 
+        stream.revert(&mut copy);
+
         if let Ok(v) = super::BreakLine::parse(stream, options) {
             return Ok(Self::BreakLine(v));
         }
+
+        stream.revert(&mut copy);
 
         return match super::Text::parse(stream, options) {
             Ok(v) => Ok(Self::Text(v)),

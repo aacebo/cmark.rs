@@ -22,8 +22,10 @@ impl BlockQuote {
         let mut value = Self::new();
 
         if stream.scan::<md_token![>]>().is_none() {
-            return Err(stream.err(r#"expected ">""#));
+            return Err(stream.ignore());
         }
+
+        log::debug!(target: "md:block_quote", "parse");
 
         loop {
             match super::Block::parse(stream, options) {
@@ -54,7 +56,7 @@ impl html::ToHtml for BlockQuote {
             el.push(child.to_html());
         }
 
-        return html::Node::Elem(el);
+        return el.to_html();
     }
 }
 

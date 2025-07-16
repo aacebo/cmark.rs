@@ -15,12 +15,25 @@ impl Text {
     }
 
     pub fn parse(stream: &mut Stream, _options: &ParseOptions) -> Result<Self, ParseError> {
-        let mut value = Self::new();
+        if stream.cursor().is_eof() {
+            return Err(stream.ignore());
+        }
 
-        value.0.push(stream.curr().as_str());
+        log::debug!(target: "md:text", "parse");
+        let mut value = Self::new();
+        let token = stream.curr();
+        value.0.push(token.as_str());
         stream.next();
 
+        if let Token::Markdown(MdToken::Literal(_)) = token {
+            return Ok(value);
+        }
+
         while let Token::Markdown(MdToken::Text(curr)) = stream.curr() {
+            if stream.cursor().is_eof() {
+                break;
+            }
+
             value.0.push(curr.as_str());
             stream.next();
         }
@@ -37,7 +50,7 @@ impl Render for Text {
 
 impl html::ToHtml for Text {
     fn to_html(&self) -> html::Node {
-        return html::Node::Raw(self.0.clone());
+        return self.0.clone().to_html();
     }
 }
 

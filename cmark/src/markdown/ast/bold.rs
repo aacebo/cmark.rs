@@ -22,8 +22,10 @@ impl Bold {
         let mut value = Self::new();
 
         if !stream.scan_n::<md_token![*]>(2) {
-            return Err(stream.err(r#"expected "**""#));
+            return Err(stream.ignore());
         }
+
+        log::debug!(target: "md:bold", "parse");
 
         while !stream.scan_n::<md_token![*]>(2) {
             let node = super::Inline::parse(stream, options)?;
@@ -48,7 +50,7 @@ impl html::ToHtml for Bold {
             el.push(child.to_html());
         }
 
-        return html::Node::Elem(el);
+        return el.to_html();
     }
 }
 

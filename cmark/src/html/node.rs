@@ -1,8 +1,8 @@
-use std::sync::Arc;
+use std::{fmt, sync::Arc};
 
 use crate::{
     Render,
-    html::{Element, Raw},
+    html::{Element, Fragment, Raw},
 };
 
 pub trait ToHtml {
@@ -12,6 +12,7 @@ pub trait ToHtml {
 #[derive(Debug, Clone)]
 pub enum Node {
     Elem(Element),
+    Frag(Fragment),
     Raw(Raw),
     Other(Arc<dyn Render>),
 }
@@ -35,9 +36,10 @@ impl From<Arc<dyn Render>> for Node {
 }
 
 impl Render for Node {
-    fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
+    fn render_into(&self, writer: &mut dyn fmt::Write) -> Result<(), fmt::Error> {
         return match self {
             Self::Elem(node) => node.render_into(writer),
+            Self::Frag(node) => node.render_into(writer),
             Self::Raw(node) => node.render_into(writer),
             Self::Other(node) => node.render_into(writer),
         };
@@ -48,8 +50,15 @@ impl PartialEq for Node {
     fn eq(&self, other: &Self) -> bool {
         return match self {
             Self::Elem(node) => node.render() == other.render(),
+            Self::Frag(node) => node.render() == other.render(),
             Self::Raw(node) => node.render() == other.render(),
             Self::Other(node) => node.render() == other.render(),
         };
+    }
+}
+
+impl fmt::Display for Node {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        return self.render_into(f);
     }
 }

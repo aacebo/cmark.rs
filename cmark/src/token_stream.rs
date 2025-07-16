@@ -62,12 +62,14 @@ impl Revert for TokenStream {
 
 impl Iter<&str, Token> for TokenStream {
     fn next_if(&mut self, value: &'_ str) -> Option<Token> {
-        if self.curr != value {
+        let curr = self.curr.clone();
+
+        if curr != value {
             return None;
         }
 
-        self.next()?;
-        return Some(self.prev.clone());
+        self.next();
+        return Some(curr);
     }
 
     fn next_or_err(&mut self, value: &'_ str) -> Result<Token, ParseError> {
@@ -107,11 +109,15 @@ impl Iter<&str, Token> for TokenStream {
 
     fn next_n(&mut self, value: &'_ str, n: i32) -> Vec<Token> {
         let mut tokens: Vec<Token> = vec![];
+        let mut copy = self.clone();
 
         for _ in 0..n {
             match self.next_if(value) {
                 Some(token) => tokens.push(token),
-                None => return tokens,
+                None => {
+                    self.revert(&mut copy);
+                    return tokens;
+                }
             };
         }
 
