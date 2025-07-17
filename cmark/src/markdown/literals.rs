@@ -34,7 +34,7 @@ macro_rules! define_literal_tokens {
 
             $(
                 pub fn $method(&self) -> bool {
-                    return false;
+                    return self.as_str() == $tokens;
                 }
             )*
         }
@@ -56,7 +56,7 @@ macro_rules! define_literal_tokens {
         impl ParseToken for Literal {
             fn parse(cursor: &mut Cursor) -> Option<Token> {
                 if cursor.is_eof() {
-                    return None;
+                    return Some($crate::Token::Eof);
                 }
 
                 $(
@@ -83,10 +83,6 @@ macro_rules! define_literal_tokens {
                     return Self { start, end };
                 }
 
-                pub fn kind() -> &'static str {
-                    return $tokens;
-                }
-
                 pub fn as_str(&self) -> &str {
                     return $tokens;
                 }
@@ -99,7 +95,7 @@ macro_rules! define_literal_tokens {
             impl ParseToken for $name {
                 fn parse(cursor: &mut Cursor) -> Option<Token> {
                     if cursor.is_eof() {
-                        return None;
+                        return Some($crate::Token::Eof);
                     }
 
                     if !cursor.next_if($tokens) {

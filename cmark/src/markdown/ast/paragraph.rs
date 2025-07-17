@@ -20,7 +20,7 @@ impl Paragraph {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
         let mut value = Self::new();
 
-        while !stream.cursor().is_eof() {
+        while !stream.curr().is_eof() {
             match super::Inline::parse(stream, options) {
                 Ok(v) => value.push(v),
                 Err(err) => {
@@ -33,7 +33,7 @@ impl Paragraph {
             };
         }
 
-        log::debug!(target: "md:paragraph", "parse");
+        log::debug!(target: "cmark:md:paragraph", "parse");
         return Ok(value);
     }
 }

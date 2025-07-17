@@ -10,11 +10,11 @@ pub enum Block {
 
 impl Block {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
-        if stream.cursor().is_eof() {
+        if stream.curr().is_eof() {
             return Err(stream.eof());
         }
 
-        log::debug!(target: "md:block", "parse");
+        log::debug!(target: "cmark:md:block", "parse");
         let mut copy = stream.clone();
 
         if let Ok(v) = super::BlockQuote::parse(stream, options) {

@@ -63,8 +63,7 @@ fn trim_suffix(path: &Path, suffix: &str) -> PathBuf {
 
 #[test]
 pub fn main() -> Result<(), io::Error> {
-    colog::init();
-    log::debug!(target: "test", "hi");
+    env_logger::init();
     let cwd = std::env::current_dir()?;
     return test_dir(&cwd.join(&Path::new("tests/markdown_test/testcases").iter().as_path()));
 }

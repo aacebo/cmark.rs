@@ -15,7 +15,7 @@ impl Cursor {
     }
 
     pub fn is_eof(&self) -> bool {
-        return self.end.index >= self.src.len();
+        return self.end.index > self.src.len();
     }
 
     pub fn curr(&self) -> u8 {
@@ -54,11 +54,11 @@ impl Cursor {
     }
 
     pub fn next_if(&mut self, value: &str) -> bool {
-        let mut cursor = self.clone();
+        let mut copy = self.clone();
 
         for c in value.chars() {
             if c != self.peek() as char {
-                self.revert(&mut cursor);
+                self.revert(&mut copy);
                 return false;
             }
 
@@ -107,6 +107,7 @@ impl Iterator for Cursor {
     type Item = u8;
 
     fn next(&mut self) -> Option<u8> {
+        let prev = self.peek();
         self.end.index += 1;
         self.end.col += 1;
 
@@ -119,6 +120,7 @@ impl Iterator for Cursor {
             return None;
         }
 
+        log::debug!(target: "cmark:cursor", "{} => {}", prev as char, self.peek() as char);
         return Some(self.peek());
     }
 }

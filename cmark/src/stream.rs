@@ -1,16 +1,14 @@
-use std::{fmt, io, path::Path};
+use std::{io, path::Path};
 
 use common::errors::ToError;
 
 use crate::{
-    Cursor, Iter, ParseError, ParseOptions, ParseToken, Parser, Render, Revert, Token, TokenStream,
-    html,
+    Cursor, Iter, ParseError, ParseOptions, ParseToken, Parser, Revert, Token, TokenStream, html,
 };
 
 #[derive(Debug, Clone)]
 pub struct Stream {
     tokens: TokenStream,
-    nodes: Vec<html::Node>,
 }
 
 impl Stream {
@@ -34,64 +32,40 @@ impl Stream {
         return self.tokens.prev.clone();
     }
 
-    pub fn is_empty(&self) -> bool {
-        return self.nodes.is_empty();
-    }
-
-    pub fn len(&self) -> usize {
-        return self.nodes.len();
-    }
-
-    pub fn get(&self, index: usize) -> Option<&html::Node> {
-        return self.nodes.get(index);
-    }
-
-    pub fn push(&mut self, node: html::Node) {
-        self.nodes.push(node);
-    }
-
-    pub fn append(&mut self, nodes: Vec<html::Node>) {
-        for node in nodes.iter() {
-            self.nodes.push(node.clone());
-        }
-    }
-
     pub fn parse<T: Parser>(&mut self, options: &ParseOptions) -> Result<html::Node, ParseError> {
-        let mut stream = self.clone();
+        let mut copy = self.clone();
         let node = match T::parse(self, options) {
             Ok(v) => v,
             Err(err) => {
-                self.revert(&mut stream);
+                self.revert(&mut copy);
                 return Err(err);
             }
         };
 
-        self.push(node.clone());
         return Ok(node);
     }
 
-    pub fn scan<T: ParseToken>(&mut self) -> Option<Token> {
+    pub fn scan<T: ParseToken>(&mut self) -> bool {
         let mut copy = self.clone();
 
-        return match T::parse(&mut self.tokens.cursor) {
-            Some(v) => Some(v),
+        return match self.tokens.next_of_type::<T>() {
+            Some(_) => true,
             None => {
                 self.revert(&mut copy);
-                return None;
+                return false;
             }
         };
     }
 
     pub fn scan_n<T: ParseToken>(&mut self, n: u32) -> bool {
-        let mut stream = self.clone();
+        let mut copy = self.clone();
 
         for _ in 0..n {
-            match T::parse(&mut self.tokens.cursor) {
-                Some(_) => {}
-                None => {
-                    self.revert(&mut stream);
-                    return false;
-                }
+            log::debug!(target: "cmark:stream:scan_n", "{} => {}", self.prev(), self.curr());
+
+            if let None = self.tokens.next_of_type::<T>() {
+                self.revert(&mut copy);
+                return false;
             };
         }
 
@@ -133,10 +107,7 @@ impl TryFrom<&Path> for Stream {
 
 impl From<TokenStream> for Stream {
     fn from(tokens: TokenStream) -> Self {
-        return Self {
-            tokens,
-            nodes: vec![],
-        };
+        return Self { tokens };
     }
 }
 
@@ -157,7 +128,7 @@ impl Iter<&str, Token> for Stream {
         return self.tokens.next_until(value);
     }
 
-    fn next_n(&mut self, value: &'_ str, n: i32) -> Vec<Token> {
+    fn next_n(&mut self, value: &'_ str, n: u32) -> Vec<Token> {
         return self.tokens.next_n(value, n);
     }
 }
@@ -179,42 +150,13 @@ impl Iter<Token, Token> for Stream {
         return self.tokens.next_until(value.as_str());
     }
 
-    fn next_n(&mut self, value: Token, n: i32) -> Vec<Token> {
+    fn next_n(&mut self, value: Token, n: u32) -> Vec<Token> {
         return self.tokens.next_n(value.as_str(), n);
-    }
-}
-
-impl Eq for Stream {}
-
-impl Render for Stream {
-    fn render_into(&self, writer: &mut dyn fmt::Write) -> Result<(), fmt::Error> {
-        for node in self.nodes.iter() {
-            node.render_into(writer)?;
-        }
-
-        return Ok(());
-    }
-}
-
-impl PartialEq<Stream> for Stream {
-    fn eq(&self, other: &Stream) -> bool {
-        return self.nodes.iter().eq(other.nodes.iter());
-    }
-}
-
-impl fmt::Display for Stream {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        for node in self.nodes.iter() {
-            node.render_into(f)?;
-        }
-
-        return Ok(());
     }
 }
 
 impl Revert for Stream {
     fn revert(&mut self, to: &mut Self) {
         self.tokens.revert(&mut to.tokens);
-        self.nodes = to.nodes.clone();
     }
 }

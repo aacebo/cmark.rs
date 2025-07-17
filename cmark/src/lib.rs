@@ -43,7 +43,7 @@ pub fn parse(src: Vec<u8>, options: &ParseOptions) -> Result {
     let mut stream = Stream::from(src);
     let mut el = html::Fragment::new();
 
-    while !stream.cursor().is_eof() {
+    while !stream.curr().is_eof() {
         match ast::Node::parse_block(&mut stream, options) {
             Ok(node) => {
                 el.push(node.clone().to_html());

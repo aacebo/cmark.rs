@@ -8,34 +8,34 @@ pub trait ParseToken: Sized {
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Token {
-    Invalid,
+    Eof,
     Markdown(MdToken),
 }
 
 impl Default for Token {
     fn default() -> Self {
-        return Self::Invalid;
+        return Self::Eof;
     }
 }
 
 impl Token {
     pub fn start(&self) -> Position {
         return match self {
-            Self::Invalid => Position::default(),
+            Self::Eof => Position::default(),
             Self::Markdown(v) => v.start(),
         };
     }
 
     pub fn end(&self) -> Position {
         return match self {
-            Self::Invalid => Position::default(),
+            Self::Eof => Position::default(),
             Self::Markdown(v) => v.end(),
         };
     }
 
     pub fn as_str(&self) -> &str {
         return match self {
-            Self::Invalid => "",
+            Self::Eof => "<eof>",
             Self::Markdown(v) => v.as_str(),
         };
     }
@@ -44,9 +44,9 @@ impl Token {
         return self.as_str().as_bytes();
     }
 
-    pub fn is_invalid(&self) -> bool {
+    pub fn is_eof(&self) -> bool {
         return match self {
-            Self::Invalid => true,
+            Self::Eof => true,
             _ => false,
         };
     }
@@ -62,7 +62,7 @@ impl Token {
 impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         return match self {
-            Self::Invalid => write!(f, "<invalid>"),
+            Self::Eof => write!(f, "<eof>"),
             Self::Markdown(v) => v.fmt(f),
         };
     }
@@ -77,7 +77,7 @@ impl PartialEq<&str> for Token {
 impl ParseToken for Token {
     fn parse(cursor: &mut Cursor) -> Option<Token> {
         if cursor.is_eof() {
-            return None;
+            return Some(Self::Eof);
         }
 
         return MdToken::parse(cursor);

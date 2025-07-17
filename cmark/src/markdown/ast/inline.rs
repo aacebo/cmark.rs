@@ -11,11 +11,11 @@ pub enum Inline {
 
 impl Inline {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
-        if stream.cursor().is_eof() {
+        if stream.curr().is_eof() {
             return Err(stream.eof());
         }
 
-        log::debug!(target: "md:inline", "parse");
+        log::debug!(target: "cmark:md:inline", "parse");
         let mut copy = stream.clone();
 
         if let Ok(v) = super::Bold::parse(stream, options) {

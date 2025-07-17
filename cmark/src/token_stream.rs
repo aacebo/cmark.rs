@@ -17,6 +17,14 @@ impl TokenStream {
         self.curr = token.clone();
         return Some(token);
     }
+
+    pub fn next_of_type<T: ParseToken>(&mut self) -> Option<Token> {
+        self.cursor.start = self.cursor.end;
+        let token = T::parse(&mut self.cursor)?;
+        self.prev = self.curr.clone();
+        self.curr = token.clone();
+        return Some(token);
+    }
 }
 
 impl From<Vec<u8>> for TokenStream {
@@ -62,14 +70,11 @@ impl Revert for TokenStream {
 
 impl Iter<&str, Token> for TokenStream {
     fn next_if(&mut self, value: &'_ str) -> Option<Token> {
-        let curr = self.curr.clone();
-
-        if curr != value {
+        if self.curr != value {
             return None;
         }
 
-        self.next();
-        return Some(curr);
+        return Some(self.next()?);
     }
 
     fn next_or_err(&mut self, value: &'_ str) -> Result<Token, ParseError> {
@@ -107,7 +112,7 @@ impl Iter<&str, Token> for TokenStream {
         return tokens;
     }
 
-    fn next_n(&mut self, value: &'_ str, n: i32) -> Vec<Token> {
+    fn next_n(&mut self, value: &'_ str, n: u32) -> Vec<Token> {
         let mut tokens: Vec<Token> = vec![];
         let mut copy = self.clone();
 

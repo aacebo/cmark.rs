@@ -15,12 +15,11 @@ impl BreakLine {
     }
 
     pub fn parse(stream: &mut Stream, _options: &ParseOptions) -> Result<Self, ParseError> {
-        if !(stream.scan_n::<md_token![space]>(2) && stream.scan::<md_token![newline]>().is_some())
-        {
+        if !(stream.scan_n::<md_token![space]>(2) && stream.scan::<md_token![newline]>()) {
             return Err(stream.ignore());
         }
 
-        log::debug!(target: "md:break_line", "parse");
+        log::debug!(target: "cmark:md:break_line", "parse");
         return Ok(Self::new());
     }
 }

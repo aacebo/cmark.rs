@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{Cursor, ParseToken, Position, Token};
+use crate::{Cursor, ParseToken, Position, Revert, Token};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum MdToken {
@@ -91,21 +91,23 @@ impl PartialEq<&str> for MdToken {
 impl ParseToken for MdToken {
     fn parse(cursor: &mut Cursor) -> Option<Token> {
         if cursor.is_eof() {
-            return None;
+            return Some(Token::Eof);
         }
 
+        let mut copy = cursor.clone();
+
         match super::Literal::parse(cursor) {
-            None => {}
+            None => cursor.revert(&mut copy),
             Some(token) => return Some(token),
         };
 
         match super::Decimal::parse(cursor) {
-            None => {}
+            None => cursor.revert(&mut copy),
             Some(token) => return Some(token),
         };
 
         match super::Int::parse(cursor) {
-            None => {}
+            None => cursor.revert(&mut copy),
             Some(token) => return Some(token),
         };
 

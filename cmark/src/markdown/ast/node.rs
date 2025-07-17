@@ -13,21 +13,25 @@ pub enum Node {
 
 impl Node {
     pub fn parse_block(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
-        if stream.cursor().is_eof() {
+        if stream.curr().is_eof() {
             return Err(stream.eof());
         }
 
-        let node = Block::parse(stream, options)?;
-        return Ok(Self::Block(node));
+        return match Block::parse(stream, options) {
+            Ok(node) => Ok(Self::Block(node)),
+            Err(err) => Err(err),
+        };
     }
 
     pub fn parse_inline(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
-        if stream.cursor().is_eof() {
+        if stream.curr().is_eof() {
             return Err(stream.eof());
         }
 
-        let node = Inline::parse(stream, options)?;
-        return Ok(Self::Inline(node));
+        return match Inline::parse(stream, options) {
+            Ok(node) => Ok(Self::Inline(node)),
+            Err(err) => Err(err),
+        };
     }
 }
 

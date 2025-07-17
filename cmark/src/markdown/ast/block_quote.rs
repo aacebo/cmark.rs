@@ -21,11 +21,11 @@ impl BlockQuote {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
         let mut value = Self::new();
 
-        if stream.scan::<md_token![>]>().is_none() {
+        if !stream.scan::<md_token![>]>() {
             return Err(stream.ignore());
         }
 
-        log::debug!(target: "md:block_quote", "parse");
+        log::debug!(target: "cmark:md:block_quote", "parse");
 
         loop {
             match super::Block::parse(stream, options) {

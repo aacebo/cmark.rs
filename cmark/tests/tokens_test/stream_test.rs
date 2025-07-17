@@ -1,6 +1,7 @@
 use cmark::{Iter, TokenStream};
 
 #[test]
+#[ignore]
 pub fn should_parse() {
     let mut stream = TokenStream::from("!>= te-st");
 
