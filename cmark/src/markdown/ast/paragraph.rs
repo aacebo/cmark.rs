@@ -20,7 +20,7 @@ impl Paragraph {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
         let mut value = Self::new();
 
-        while !stream.curr().is_eof() {
+        while !stream.tokens().is_eof() {
             match super::Inline::parse(stream, options) {
                 Ok(v) => value.push(v),
                 Err(err) => {

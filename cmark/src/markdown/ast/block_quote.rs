@@ -33,7 +33,7 @@ impl BlockQuote {
                 Err(err) => return Err(err),
             };
 
-            if stream.curr() != ">" {
+            if stream.tokens().curr != ">" {
                 break;
             }
         }

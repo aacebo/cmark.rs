@@ -6,6 +6,7 @@ use crate::{Cursor, Iter, ParseError, ParseToken, Revert, Token};
 pub struct TokenStream {
     pub prev: Token,
     pub curr: Token,
+    pub next: Token,
     pub cursor: Cursor,
 }
 
@@ -14,7 +15,8 @@ impl TokenStream {
         self.cursor.start = self.cursor.end;
         let token = Token::parse(&mut self.cursor)?;
         self.prev = self.curr.clone();
-        self.curr = token.clone();
+        self.curr = self.prev.clone();
+        self.next = token.clone();
         return Some(token);
     }
 
@@ -22,8 +24,13 @@ impl TokenStream {
         self.cursor.start = self.cursor.end;
         let token = T::parse(&mut self.cursor)?;
         self.prev = self.curr.clone();
-        self.curr = token.clone();
+        self.curr = self.prev.clone();
+        self.next = token.clone();
         return Some(token);
+    }
+
+    pub fn is_eof(&self) -> bool {
+        return self.curr.is_eof();
     }
 }
 
@@ -52,6 +59,7 @@ impl From<Cursor> for TokenStream {
         let mut value = Self {
             prev: Token::default(),
             curr: Token::default(),
+            next: Token::default(),
             cursor,
         };
 
@@ -64,6 +72,7 @@ impl Revert for TokenStream {
     fn revert(&mut self, to: &mut Self) {
         self.prev = to.prev.clone();
         self.curr = to.curr.clone();
+        self.next = to.next.clone();
         self.cursor.revert(&mut to.cursor);
     }
 }

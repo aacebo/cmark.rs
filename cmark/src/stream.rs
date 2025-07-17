@@ -2,9 +2,7 @@ use std::{io, path::Path};
 
 use common::errors::ToError;
 
-use crate::{
-    Cursor, Iter, ParseError, ParseOptions, ParseToken, Parser, Revert, Token, TokenStream, html,
-};
+use crate::{Cursor, Iter, ParseError, ParseToken, Revert, Token, TokenStream};
 
 #[derive(Debug, Clone)]
 pub struct Stream {
@@ -24,27 +22,6 @@ impl Stream {
         return self.tokens.next();
     }
 
-    pub fn curr(&self) -> Token {
-        return self.tokens.curr.clone();
-    }
-
-    pub fn prev(&self) -> Token {
-        return self.tokens.prev.clone();
-    }
-
-    pub fn parse<T: Parser>(&mut self, options: &ParseOptions) -> Result<html::Node, ParseError> {
-        let mut copy = self.clone();
-        let node = match T::parse(self, options) {
-            Ok(v) => v,
-            Err(err) => {
-                self.revert(&mut copy);
-                return Err(err);
-            }
-        };
-
-        return Ok(node);
-    }
-
     pub fn scan<T: ParseToken>(&mut self) -> bool {
         let mut copy = self.clone();
 
@@ -61,7 +38,7 @@ impl Stream {
         let mut copy = self.clone();
 
         for _ in 0..n {
-            log::debug!(target: "cmark:stream:scan_n", "{} => {}", self.prev(), self.curr());
+            log::debug!(target: "cmark:stream:scan_n", "{} => {}", self.tokens.prev, self.tokens.curr);
 
             if let None = self.tokens.next_of_type::<T>() {
                 self.revert(&mut copy);

@@ -21,20 +21,20 @@ impl Bold {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
         let mut value = Self::new();
 
-        log::debug!(target: "cmark:md:bold", "start parse {} => {}", stream.prev(), stream.curr());
+        log::debug!(target: "cmark:md:bold", "start parse {} => {}", stream.tokens().prev, stream.tokens().curr);
 
         if !stream.scan_n::<md_token![*]>(2) {
             return Err(stream.ignore());
         }
 
-        log::debug!(target: "cmark:md:bold", "middle parse {} => {}", stream.prev(), stream.curr());
+        log::debug!(target: "cmark:md:bold", "middle parse {} => {}", stream.tokens().prev, stream.tokens().curr);
 
         while !stream.scan_n::<md_token![*]>(2) {
             let node = super::Inline::parse(stream, options)?;
             value.push(node);
         }
 
-        log::debug!(target: "cmark:md:bold", "end parse {} => {}", stream.prev(), stream.curr());
+        log::debug!(target: "cmark:md:bold", "end parse {} => {}", stream.tokens().prev, stream.tokens().curr);
 
         return Ok(value);
     }

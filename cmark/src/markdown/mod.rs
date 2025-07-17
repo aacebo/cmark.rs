@@ -32,7 +32,7 @@ impl Extension for Markdown {
     }
 
     fn parse_block(&mut self, stream: &mut Stream, options: &ParseOptions) -> Result {
-        if stream.curr().is_eof() {
+        if stream.tokens().is_eof() {
             return Err(stream.eof());
         }
 
@@ -41,7 +41,7 @@ impl Extension for Markdown {
     }
 
     fn parse_inline(&mut self, stream: &mut Stream, options: &ParseOptions) -> Result {
-        if stream.curr().is_eof() {
+        if stream.tokens().is_eof() {
             return Err(stream.eof());
         }
 

@@ -9,12 +9,13 @@ pub trait ParseToken: Sized {
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Token {
     Eof,
+    Sof,
     Markdown(MdToken),
 }
 
 impl Default for Token {
     fn default() -> Self {
-        return Self::Eof;
+        return Self::Sof;
     }
 }
 
@@ -22,6 +23,7 @@ impl Token {
     pub fn start(&self) -> Position {
         return match self {
             Self::Eof => Position::default(),
+            Self::Sof => Position::default(),
             Self::Markdown(v) => v.start(),
         };
     }
@@ -29,19 +31,28 @@ impl Token {
     pub fn end(&self) -> Position {
         return match self {
             Self::Eof => Position::default(),
+            Self::Sof => Position::default(),
             Self::Markdown(v) => v.end(),
         };
     }
 
     pub fn as_str(&self) -> &str {
         return match self {
-            Self::Eof => "<eof>",
+            Self::Eof => "<cmark:end>",
+            Self::Sof => "<cmark:start>",
             Self::Markdown(v) => v.as_str(),
         };
     }
 
     pub fn as_bytes(&self) -> &[u8] {
         return self.as_str().as_bytes();
+    }
+
+    pub fn is_sof(&self) -> bool {
+        return match self {
+            Self::Sof => true,
+            _ => false,
+        };
     }
 
     pub fn is_eof(&self) -> bool {
@@ -62,7 +73,8 @@ impl Token {
 impl fmt::Display for Token {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         return match self {
-            Self::Eof => write!(f, "<eof>"),
+            Self::Eof => write!(f, "<cmark:end>"),
+            Self::Sof => write!(f, "<cmark:start>"),
             Self::Markdown(v) => v.fmt(f),
         };
     }
