@@ -11,7 +11,7 @@ pub enum Inline {
 
 impl Inline {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
-        if stream.tokens().is_eof() {
+        if stream.is_eof() {
             return Err(stream.eof());
         }
 

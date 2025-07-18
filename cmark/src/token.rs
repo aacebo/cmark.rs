@@ -88,6 +88,10 @@ impl PartialEq<&str> for Token {
 
 impl ParseToken for Token {
     fn parse(cursor: &mut Cursor) -> Option<Token> {
+        if cursor.is_sof() {
+            return Some(Self::Sof);
+        }
+
         if cursor.is_eof() {
             return Some(Self::Eof);
         }

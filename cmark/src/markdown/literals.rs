@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{Cursor, ParseToken, Position, Token};
+use crate::{Cursor, ParseToken, Position, Revert, Token};
 
 macro_rules! define_literal_tokens {
     ($($tokens:literal $name:ident $method:ident)*) => {
@@ -59,9 +59,11 @@ macro_rules! define_literal_tokens {
                     return Some($crate::Token::Eof);
                 }
 
+                let mut copy = cursor.clone();
+
                 $(
                     match $name::parse(cursor) {
-                        None => {},
+                        None => cursor.revert(&mut copy),
                         Some(token) => return Some(token),
                     };
                 )*

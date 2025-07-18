@@ -1,9 +1,6 @@
 mod cursor;
 pub use cursor::*;
 
-mod iter;
-pub use iter::*;
-
 mod parse_error;
 pub use parse_error::*;
 
@@ -31,9 +28,6 @@ pub use stream::*;
 mod token;
 pub use token::*;
 
-mod token_stream;
-pub use token_stream::*;
-
 use crate::{html::ToHtml, markdown::ast};
 
 pub mod html;
@@ -43,7 +37,7 @@ pub fn parse(src: Vec<u8>, options: &ParseOptions) -> Result {
     let mut stream = Stream::from(src);
     let mut el = html::Fragment::new();
 
-    while !stream.tokens().curr.is_eof() {
+    while !stream.curr.is_eof() {
         match ast::Node::parse_block(&mut stream, options) {
             Ok(node) => {
                 el.push(node.clone().to_html());

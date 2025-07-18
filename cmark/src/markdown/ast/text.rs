@@ -14,13 +14,13 @@ impl Text {
     }
 
     pub fn parse(stream: &mut Stream, _options: &ParseOptions) -> Result<Self, ParseError> {
-        if stream.tokens().is_eof() {
+        if stream.is_eof() {
             return Err(stream.ignore());
         }
 
         log::debug!(target: "cmark:md:text", "parse");
         let mut value = Self::new();
-        let token = stream.tokens().curr.clone();
+        let token = stream.curr.clone();
         value.0.push(token.as_str());
         stream.next();
 

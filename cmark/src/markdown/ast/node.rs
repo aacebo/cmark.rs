@@ -13,7 +13,7 @@ pub enum Node {
 
 impl Node {
     pub fn parse_block(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
-        if stream.tokens().is_eof() {
+        if stream.is_eof() {
             return Err(stream.eof());
         }
 
@@ -24,7 +24,7 @@ impl Node {
     }
 
     pub fn parse_inline(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
-        if stream.tokens().is_eof() {
+        if stream.is_eof() {
             return Err(stream.eof());
         }
 

@@ -3,7 +3,6 @@ use std::fmt;
 use crate::{
     ParseError, ParseOptions, Render, Stream,
     html::{self, ToHtml},
-    md_token,
 };
 
 #[derive(Debug, Clone)]
@@ -21,7 +20,7 @@ impl BlockQuote {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
         let mut value = Self::new();
 
-        if !stream.scan::<md_token![>]>() {
+        if !stream.next_if(">") {
             return Err(stream.ignore());
         }
 
@@ -33,7 +32,7 @@ impl BlockQuote {
                 Err(err) => return Err(err),
             };
 
-            if stream.tokens().curr != ">" {
+            if stream.curr != ">" {
                 break;
             }
         }

@@ -25,7 +25,7 @@ impl Int {
 
 impl ParseToken for Int {
     fn parse(cursor: &mut Cursor) -> Option<Token> {
-        if cursor.peek() < b'0' || cursor.peek() > b'9' {
+        if cursor.end() < b'0' || cursor.end() > b'9' {
             return None;
         }
 

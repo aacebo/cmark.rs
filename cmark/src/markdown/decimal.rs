@@ -25,17 +25,17 @@ impl Decimal {
 
 impl ParseToken for Decimal {
     fn parse(cursor: &mut Cursor) -> Option<Token> {
-        if cursor.peek() < b'0' || cursor.peek() > b'9' {
+        if cursor.end() < b'0' || cursor.end() > b'9' {
             return None;
         }
 
         cursor.next_while_num();
 
-        if cursor.peek() != b'.' {
+        if cursor.end() != b'.' {
             return None;
         }
 
-        if cursor.peek() < b'0' || cursor.peek() > b'9' {
+        if cursor.end() < b'0' || cursor.end() > b'9' {
             return None;
         }
 

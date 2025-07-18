@@ -52,6 +52,7 @@ fn test_file(path: &Path) -> Result<(), io::Error> {
     };
 
     assert_eq!(html, rendered);
+    println!("{}", rendered);
     return Ok(());
 }
 

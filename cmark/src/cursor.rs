@@ -10,15 +10,19 @@ pub struct Cursor {
 }
 
 impl Cursor {
+    pub fn len(&self) -> usize {
+        return self.end.index - self.start.index;
+    }
+
     pub fn is_sof(&self) -> bool {
-        return self.start.index == 0;
+        return self.start.index == 0 && self.end.index == 0;
     }
 
     pub fn is_eof(&self) -> bool {
         return self.end.index > self.src.len();
     }
 
-    pub fn curr(&self) -> u8 {
+    pub fn start(&self) -> u8 {
         if self.start.index >= self.src.len() {
             return 0;
         }
@@ -26,16 +30,20 @@ impl Cursor {
         return self.src[self.start.index];
     }
 
-    pub fn peek(&self) -> u8 {
-        return self.peek_n(0);
-    }
-
-    pub fn peek_n(&self, n: usize) -> u8 {
-        if self.end.index + n >= self.src.len() {
+    pub fn end(&self) -> u8 {
+        if self.end.index >= self.src.len() {
             return 0;
         }
 
-        return self.src[self.end.index + n];
+        return self.src[self.end.index];
+    }
+
+    pub fn peek(&self) -> u8 {
+        if self.end.index + 1 >= self.src.len() {
+            return 0;
+        }
+
+        return self.src[self.end.index + 1];
     }
 
     pub fn to_bytes(&self) -> &[u8] {
@@ -56,24 +64,31 @@ impl Cursor {
     pub fn next_if(&mut self, value: &str) -> bool {
         let mut copy = self.clone();
 
-        for c in value.chars() {
-            if c != self.peek() as char {
-                self.revert(&mut copy);
-                return false;
-            }
-
+        while self.end.index < self.src.len() && self.len() < value.len() {
             self.next();
         }
 
-        return true;
+        let eq = self.to_bytes() == value.as_bytes();
+
+        if !eq {
+            self.revert(&mut copy);
+        }
+
+        return eq;
+    }
+
+    pub fn is_alpha(&self, value: u8) -> bool {
+        return (value >= b'a' && value <= b'z') || (value >= b'A' && value <= b'Z');
+    }
+
+    pub fn is_num(&self, value: u8) -> bool {
+        return value >= b'0' && value <= b'9';
     }
 
     pub fn next_while_alpha(&mut self) -> u32 {
         let mut i = 0;
 
-        while (self.peek() >= b'a' && self.peek() <= b'z')
-            || (self.peek() >= b'A' && self.peek() <= b'Z')
-        {
+        while self.is_alpha(self.end()) {
             self.next();
             i = i + 1;
         }
@@ -84,7 +99,7 @@ impl Cursor {
     pub fn next_while_num(&mut self) -> u32 {
         let mut i = 0;
 
-        while self.peek() >= b'0' && self.peek() <= b'9' {
+        while self.is_num(self.end()) {
             self.next();
             i = i + 1;
         }
@@ -107,21 +122,21 @@ impl Iterator for Cursor {
     type Item = u8;
 
     fn next(&mut self) -> Option<u8> {
-        let prev = self.peek();
+        let prev = self.end();
         self.end.index += 1;
         self.end.col += 1;
 
-        if self.peek() == b'\n' {
+        if self.end() == b'\n' {
             self.end.ln += 1;
             self.end.col = 0;
         }
 
-        if self.peek() == 0 {
+        if self.end() == 0 {
             return None;
         }
 
-        log::debug!(target: "cmark:cursor", "{} => {}", prev as char, self.peek() as char);
-        return Some(self.peek());
+        log::debug!(target: "cmark:cursor", r#""{}" => "{}""#, prev as char, self.end() as char);
+        return Some(self.end());
     }
 }
 

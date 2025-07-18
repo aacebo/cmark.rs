@@ -3,7 +3,6 @@ use std::fmt;
 use crate::{
     ParseError, ParseOptions, Render, Stream,
     html::{self, ToHtml},
-    md_token,
 };
 
 #[derive(Debug, Clone)]
@@ -21,20 +20,20 @@ impl Bold {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
         let mut value = Self::new();
 
-        log::debug!(target: "cmark:md:bold", "start parse {} => {}", stream.tokens().prev, stream.tokens().curr);
+        log::debug!(target: "cmark:md:bold", r#"start parse "{}" => "{}" => "{}""#, stream.prev, stream.curr, stream.next);
 
-        if !stream.scan_n::<md_token![*]>(2) {
+        if !stream.next_n("*", 2) {
             return Err(stream.ignore());
         }
 
-        log::debug!(target: "cmark:md:bold", "middle parse {} => {}", stream.tokens().prev, stream.tokens().curr);
+        log::debug!(target: "cmark:md:bold", r#"middle parse "{}" => "{}" => "{}""#, stream.prev, stream.curr, stream.next);
 
-        while !stream.scan_n::<md_token![*]>(2) {
+        while !stream.next_n("*", 2) {
             let node = super::Inline::parse(stream, options)?;
             value.push(node);
         }
 
-        log::debug!(target: "cmark:md:bold", "end parse {} => {}", stream.tokens().prev, stream.tokens().curr);
+        log::debug!(target: "cmark:md:bold", r#"end parse "{}" => "{}" => "{}""#, stream.prev, stream.curr, stream.next);
 
         return Ok(value);
     }

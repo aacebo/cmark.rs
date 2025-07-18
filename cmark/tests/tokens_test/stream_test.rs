@@ -1,58 +1,15 @@
-use cmark::{Iter, TokenStream};
+use cmark::Stream;
 
 #[test]
-#[ignore]
 pub fn should_parse() {
-    let mut stream = TokenStream::from("!>= te-st");
+    let mut stream = Stream::from("!>= te-st");
 
-    debug_assert_eq!(
-        stream.next_if("!").unwrap_or_default().as_str(),
-        "!",
-        "1. stream => {:#?}",
-        stream
-    );
-
-    debug_assert_eq!(
-        stream.next_if(">").unwrap_or_default().as_str(),
-        ">",
-        "2. stream => {:#?}",
-        stream
-    );
-
-    debug_assert_eq!(
-        stream.next_if("=").unwrap_or_default().as_str(),
-        "=",
-        "3. stream => {:#?}",
-        stream
-    );
-
-    debug_assert_eq!(
-        stream.next_if(" ").unwrap_or_default().as_str(),
-        " ",
-        "4. stream => {:#?}",
-        stream
-    );
-
-    debug_assert_eq!(stream.next_if("test"), None, "5. stream => {:#?}", stream);
-
-    debug_assert_eq!(
-        stream.next_if("te").unwrap_or_default().as_str(),
-        "te",
-        "6. stream => {:#?}",
-        stream
-    );
-
-    debug_assert_eq!(
-        stream.next_if("-").unwrap_or_default().as_str(),
-        "-",
-        "7. stream => {:#?}",
-        stream
-    );
-
-    debug_assert_eq!(
-        stream.next_if("st").unwrap_or_default().as_str(),
-        "st",
-        "8. stream => {:#?}",
-        stream
-    );
+    debug_assert!(stream.next_if("!"), "1. stream => {:#?}", stream);
+    debug_assert!(stream.next_if(">"), "2. stream => {:#?}", stream);
+    debug_assert!(stream.next_if("="), "3. stream => {:#?}", stream);
+    debug_assert!(stream.next_if(" "), "4. stream => {:#?}", stream);
+    debug_assert_eq!(stream.next_if("test"), false, "5. stream => {:#?}", stream);
+    debug_assert!(stream.next_if("te"), "6. stream => {:#?}", stream);
+    debug_assert!(stream.next_if("-"), "7. stream => {:#?}", stream);
+    debug_assert!(stream.next_if("st"), "8. stream => {:#?}", stream);
 }

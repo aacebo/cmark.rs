@@ -3,7 +3,6 @@ use std::fmt;
 use crate::{
     ParseError, ParseOptions, Render, Stream,
     html::{self, ToHtml},
-    md_token,
 };
 
 #[derive(Debug, Clone)]
@@ -15,7 +14,7 @@ impl BreakLine {
     }
 
     pub fn parse(stream: &mut Stream, _options: &ParseOptions) -> Result<Self, ParseError> {
-        if !(stream.scan_n::<md_token![space]>(2) && stream.scan::<md_token![newline]>()) {
+        if !(stream.next_n(" ", 2) && stream.next_if("\n")) {
             return Err(stream.ignore());
         }
 
