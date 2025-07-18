@@ -6,6 +6,7 @@ pub trait Render: std::fmt::Debug {
         writer: &mut dyn std::fmt::Write,
         options: &RenderOptions,
     ) -> Result<(), std::fmt::Error>;
+
     fn render(&self, options: &RenderOptions) -> Result<String, std::fmt::Error> {
         let mut buf = String::new();
         self.render_into(&mut buf, options)?;

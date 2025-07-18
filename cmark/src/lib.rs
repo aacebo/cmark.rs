@@ -11,10 +11,7 @@ mod render;
 pub use render::*;
 
 mod revert;
-pub use revert::*;
-
-mod extension;
-pub use extension::*;
+use revert::*;
 
 mod options;
 pub use options::*;
