@@ -1,6 +1,6 @@
 use common::collections::Map;
 
-use crate::{Render, html::esc};
+use crate::{Render, RenderOptions, html::esc};
 
 /// Attributes
 ///
@@ -8,7 +8,11 @@ use crate::{Render, html::esc};
 pub type Attributes = Map<String, String>;
 
 impl Render for Map<String, String> {
-    fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
+    fn render_into(
+        &self,
+        writer: &mut dyn std::fmt::Write,
+        _options: &RenderOptions,
+    ) -> Result<(), std::fmt::Error> {
         for pair in self.iter() {
             write!(writer, " {}=\"", pair.key)?;
             esc(&pair.value, writer)?;

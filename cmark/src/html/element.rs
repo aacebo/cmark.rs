@@ -1,5 +1,5 @@
 use crate::{
-    Render,
+    Render, RenderOptions,
     html::{Attributes, Classes, Node},
 };
 
@@ -93,16 +93,20 @@ impl Element {
 }
 
 impl Render for Element {
-    fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
+    fn render_into(
+        &self,
+        writer: &mut dyn std::fmt::Write,
+        options: &RenderOptions,
+    ) -> Result<(), std::fmt::Error> {
         write!(writer, "<{}", self.selector)?;
-        self.attributes.render_into(writer)?;
+        self.attributes.render_into(writer, options)?;
 
         if self.children.is_empty() {
             return Ok(write!(writer, " />").unwrap());
         }
 
         write!(writer, ">")?;
-        self.children.render_into(writer)?;
+        self.children.render_into(writer, options)?;
         write!(writer, "</{}>", self.selector)?;
         return Ok(());
     }

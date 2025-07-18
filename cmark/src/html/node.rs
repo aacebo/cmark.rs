@@ -1,7 +1,7 @@
 use std::{fmt, sync::Arc};
 
 use crate::{
-    Render,
+    Render, RenderOptions,
     html::{Element, Fragment, Raw},
 };
 
@@ -36,12 +36,16 @@ impl From<Arc<dyn Render>> for Node {
 }
 
 impl Render for Node {
-    fn render_into(&self, writer: &mut dyn fmt::Write) -> Result<(), fmt::Error> {
+    fn render_into(
+        &self,
+        writer: &mut dyn fmt::Write,
+        options: &RenderOptions,
+    ) -> Result<(), fmt::Error> {
         return match self {
-            Self::Elem(node) => node.render_into(writer),
-            Self::Frag(node) => node.render_into(writer),
-            Self::Raw(node) => node.render_into(writer),
-            Self::Other(node) => node.render_into(writer),
+            Self::Elem(node) => node.render_into(writer, options),
+            Self::Frag(node) => node.render_into(writer, options),
+            Self::Raw(node) => node.render_into(writer, options),
+            Self::Other(node) => node.render_into(writer, options),
         };
     }
 }
@@ -49,16 +53,24 @@ impl Render for Node {
 impl PartialEq for Node {
     fn eq(&self, other: &Self) -> bool {
         return match self {
-            Self::Elem(node) => node.render() == other.render(),
-            Self::Frag(node) => node.render() == other.render(),
-            Self::Raw(node) => node.render() == other.render(),
-            Self::Other(node) => node.render() == other.render(),
+            Self::Elem(node) => {
+                node.render(&RenderOptions::default()) == other.render(&RenderOptions::default())
+            }
+            Self::Frag(node) => {
+                node.render(&RenderOptions::default()) == other.render(&RenderOptions::default())
+            }
+            Self::Raw(node) => {
+                node.render(&RenderOptions::default()) == other.render(&RenderOptions::default())
+            }
+            Self::Other(node) => {
+                node.render(&RenderOptions::default()) == other.render(&RenderOptions::default())
+            }
         };
     }
 }
 
 impl fmt::Display for Node {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        return self.render_into(f);
+        return self.render_into(f, &RenderOptions::default());
     }
 }

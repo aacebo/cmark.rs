@@ -4,7 +4,7 @@ use std::{
     str::FromStr,
 };
 
-use cmark::{ParseOptions, Render};
+use cmark::{ParseOptions, Render, RenderOptions};
 
 fn test_dir(path: &Path) -> Result<(), io::Error> {
     println!("{}", path.display());
@@ -46,7 +46,7 @@ fn test_file(path: &Path) -> Result<(), io::Error> {
         Err(err) => panic!("{}", err),
     };
 
-    let rendered = match node.render() {
+    let rendered = match node.render(&RenderOptions::default()) {
         Ok(v) => v,
         Err(err) => panic!("{}", err),
     };

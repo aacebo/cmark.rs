@@ -1,4 +1,4 @@
-use cmark::{Render, html::Element};
+use cmark::{Render, RenderOptions, html::Element};
 
 #[test]
 pub fn should_add_class() {
@@ -7,7 +7,7 @@ pub fn should_add_class() {
 
     assert!(el.has_class("bg-red"));
 
-    match el.render() {
+    match el.render(&RenderOptions::default()) {
         Ok(v) => assert_eq!(v, r#"<p class="bg-red" />"#),
         Err(err) => panic!("{}", err),
     }

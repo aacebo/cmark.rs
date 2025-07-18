@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{Render, html::Node};
+use crate::{Render, RenderOptions, html::Node};
 
 /// Raw
 ///
@@ -35,7 +35,7 @@ impl From<String> for Raw {
 }
 
 impl Render for Raw {
-    fn render_into(&self, writer: &mut dyn fmt::Write) -> fmt::Result {
+    fn render_into(&self, writer: &mut dyn fmt::Write, _options: &RenderOptions) -> fmt::Result {
         return write!(writer, "{}", self);
     }
 }

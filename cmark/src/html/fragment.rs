@@ -1,4 +1,4 @@
-use crate::{Render, html::Node};
+use crate::{Render, RenderOptions, html::Node};
 
 #[derive(Debug, Clone)]
 pub struct Fragment {
@@ -28,8 +28,12 @@ impl Fragment {
 }
 
 impl Render for Fragment {
-    fn render_into(&self, writer: &mut dyn std::fmt::Write) -> Result<(), std::fmt::Error> {
-        self.children.render_into(writer)?;
+    fn render_into(
+        &self,
+        writer: &mut dyn std::fmt::Write,
+        options: &RenderOptions,
+    ) -> Result<(), std::fmt::Error> {
+        self.children.render_into(writer, options)?;
         return Ok(());
     }
 }

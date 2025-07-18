@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{ParseError, ParseOptions, Render, Revert, Stream, html};
+use crate::{ParseError, ParseOptions, Render, RenderOptions, Revert, Stream, html};
 
 #[derive(Debug, Clone)]
 pub enum Inline {
@@ -38,11 +38,15 @@ impl Inline {
 }
 
 impl Render for Inline {
-    fn render_into(&self, writer: &mut dyn fmt::Write) -> Result<(), fmt::Error> {
+    fn render_into(
+        &self,
+        writer: &mut dyn fmt::Write,
+        options: &RenderOptions,
+    ) -> Result<(), fmt::Error> {
         return match self {
-            Self::Bold(v) => v.render_into(writer),
-            Self::BreakLine(v) => v.render_into(writer),
-            Self::Text(v) => v.render_into(writer),
+            Self::Bold(v) => v.render_into(writer, options),
+            Self::BreakLine(v) => v.render_into(writer, options),
+            Self::Text(v) => v.render_into(writer, options),
         };
     }
 }
@@ -59,6 +63,6 @@ impl html::ToHtml for Inline {
 
 impl fmt::Display for Inline {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        return self.render_into(f);
+        return self.render_into(f, &RenderOptions::default());
     }
 }

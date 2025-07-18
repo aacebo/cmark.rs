@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::{
-    ParseError, ParseOptions, Render, Stream,
+    ParseError, ParseOptions, Render, RenderOptions, Stream,
     html::{self, ToHtml},
 };
 
@@ -29,8 +29,12 @@ impl Text {
 }
 
 impl Render for Text {
-    fn render_into(&self, writer: &mut dyn fmt::Write) -> Result<(), fmt::Error> {
-        return self.to_html().render_into(writer);
+    fn render_into(
+        &self,
+        writer: &mut dyn fmt::Write,
+        options: &RenderOptions,
+    ) -> Result<(), fmt::Error> {
+        return self.to_html().render_into(writer, options);
     }
 }
 
@@ -42,6 +46,6 @@ impl html::ToHtml for Text {
 
 impl fmt::Display for Text {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        return self.render_into(f);
+        return self.render_into(f, &RenderOptions::default());
     }
 }

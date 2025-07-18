@@ -1,7 +1,7 @@
 use std::fmt;
 
 use crate::{
-    ParseError, ParseOptions, Render, Stream, html,
+    ParseError, ParseOptions, Render, RenderOptions, Stream, html,
     markdown::ast::{Block, Inline},
 };
 
@@ -36,10 +36,10 @@ impl Node {
 }
 
 impl Render for Node {
-    fn render_into(&self, writer: &mut dyn fmt::Write) -> fmt::Result {
+    fn render_into(&self, writer: &mut dyn fmt::Write, options: &RenderOptions) -> fmt::Result {
         return match self {
-            Self::Block(v) => v.render_into(writer),
-            Self::Inline(v) => v.render_into(writer),
+            Self::Block(v) => v.render_into(writer, options),
+            Self::Inline(v) => v.render_into(writer, options),
         };
     }
 }
@@ -55,6 +55,6 @@ impl html::ToHtml for Node {
 
 impl fmt::Display for Node {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        return self.render_into(f);
+        return self.render_into(f, &RenderOptions::default());
     }
 }

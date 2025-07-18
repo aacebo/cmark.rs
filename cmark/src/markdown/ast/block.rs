@@ -1,6 +1,6 @@
 use std::fmt;
 
-use crate::{ParseError, ParseOptions, Render, Revert, Stream, html};
+use crate::{ParseError, ParseOptions, Render, RenderOptions, Revert, Stream, html};
 
 #[derive(Debug, Clone)]
 pub enum Block {
@@ -31,10 +31,14 @@ impl Block {
 }
 
 impl Render for Block {
-    fn render_into(&self, writer: &mut dyn fmt::Write) -> Result<(), fmt::Error> {
+    fn render_into(
+        &self,
+        writer: &mut dyn fmt::Write,
+        options: &RenderOptions,
+    ) -> Result<(), fmt::Error> {
         return match self {
-            Self::BlockQuote(v) => v.render_into(writer),
-            Self::Paragraph(v) => v.render_into(writer),
+            Self::BlockQuote(v) => v.render_into(writer, options),
+            Self::Paragraph(v) => v.render_into(writer, options),
         };
     }
 }
@@ -50,6 +54,6 @@ impl html::ToHtml for Block {
 
 impl fmt::Display for Block {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        return self.render_into(f);
+        return self.render_into(f, &RenderOptions::default());
     }
 }
