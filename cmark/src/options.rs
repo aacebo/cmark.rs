@@ -30,7 +30,7 @@ pub struct ParseOptions {
 impl Default for ParseOptions {
     fn default() -> Self {
         return Self {
-            alt: false,
+            alt: true,
             html: true,
             links: true,
         };
@@ -40,7 +40,7 @@ impl Default for ParseOptions {
 #[derive(Debug, Clone)]
 pub struct RenderOptions {
     pub escape: bool,
-    pub indent_style: Indent,
+    pub indent_style: IndentStyle,
     pub indent_size: u16,
     pub max_line_length: Option<u16>,
 }
@@ -49,7 +49,7 @@ impl Default for RenderOptions {
     fn default() -> Self {
         return Self {
             escape: false,
-            indent_style: Indent::Space,
+            indent_style: IndentStyle::Space,
             indent_size: 2,
             max_line_length: None,
         };
@@ -57,12 +57,12 @@ impl Default for RenderOptions {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub enum Indent {
+pub enum IndentStyle {
     Space,
     Tab,
 }
 
-impl Display for Indent {
+impl Display for IndentStyle {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         return match self {
             Self::Space => write!(f, "space"),

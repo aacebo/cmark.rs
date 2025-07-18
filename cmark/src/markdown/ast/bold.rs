@@ -20,20 +20,37 @@ impl Bold {
     pub fn parse(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
         let mut value = Self::new();
 
-        log::debug!(target: "cmark:md:bold", r#"start parse "{}" => "{}" => "{}""#, stream.prev, stream.curr, stream.next);
-
         if !stream.next_n("*", 2) {
-            return Err(stream.ignore());
+            return Self::parse_alt(stream, options);
         }
 
-        log::debug!(target: "cmark:md:bold", r#"middle parse "{}" => "{}" => "{}""#, stream.prev, stream.curr, stream.next);
+        log::debug!(target: "cmark:md:bold", r#"parse "{}" => "{}" => "{}""#, stream.prev, stream.curr, stream.next);
 
         while !stream.next_n("*", 2) {
             let node = super::Inline::parse(stream, options)?;
             value.push(node);
         }
 
-        log::debug!(target: "cmark:md:bold", r#"end parse "{}" => "{}" => "{}""#, stream.prev, stream.curr, stream.next);
+        return Ok(value);
+    }
+
+    pub fn parse_alt(stream: &mut Stream, options: &ParseOptions) -> Result<Self, ParseError> {
+        if !options.alt {
+            return Err(stream.ignore());
+        }
+
+        let mut value = Self::new();
+
+        if !stream.next_n("_", 2) {
+            return Err(stream.ignore());
+        }
+
+        log::debug!(target: "cmark:md:bold", r#"parse "{}" => "{}" => "{}""#, stream.prev, stream.curr, stream.next);
+
+        while !stream.next_n("_", 2) {
+            let node = super::Inline::parse(stream, options)?;
+            value.push(node);
+        }
 
         return Ok(value);
     }
