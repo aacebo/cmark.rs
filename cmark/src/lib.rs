@@ -32,7 +32,7 @@ pub mod markdown;
 
 #[allow(unused_imports)]
 #[cfg(feature = "rsx")]
-pub use cmark_macros::*;
+pub use cmark_rsx::*;
 
 pub fn parse(src: Vec<u8>, options: &ParseOptions) -> Result {
     let mut stream = Stream::from(src);

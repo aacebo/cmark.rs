@@ -65,14 +65,14 @@ dependencies = [
 name = "cmark"
 version = "0.1.0"
 dependencies = [
- "cmark_macros",
+ "cmark_rsx",
  "common",
  "env_logger",
  "log",
 ]
 
 [[package]]
-name = "cmark_macros"
+name = "cmark_rsx"
 version = "0.1.0"
 dependencies = [
  "cmark",
