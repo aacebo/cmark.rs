@@ -111,3 +111,12 @@ impl Render for Element {
         return Ok(());
     }
 }
+
+impl PartialEq<&str> for Element {
+    fn eq(&self, other: &&str) -> bool {
+        return match self.render(&RenderOptions::default()) {
+            Ok(v) => v == *other,
+            Err(_) => false,
+        };
+    }
+}

@@ -37,3 +37,12 @@ impl Render for Fragment {
         return Ok(());
     }
 }
+
+impl PartialEq<&str> for Fragment {
+    fn eq(&self, other: &&str) -> bool {
+        return match self.render(&RenderOptions::default()) {
+            Ok(v) => v == *other,
+            Err(_) => false,
+        };
+    }
+}

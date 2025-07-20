@@ -30,6 +30,10 @@ use crate::{html::ToHtml, markdown::ast};
 pub mod html;
 pub mod markdown;
 
+#[allow(unused_imports)]
+#[cfg(feature = "rsx")]
+pub use cmark_macros::*;
+
 pub fn parse(src: Vec<u8>, options: &ParseOptions) -> Result {
     let mut stream = Stream::from(src);
     let mut el = html::Fragment::new();

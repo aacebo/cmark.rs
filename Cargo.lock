@@ -76,6 +76,9 @@ name = "cmark_macros"
 version = "0.1.0"
 dependencies = [
  "cmark",
+ "common",
+ "proc-macro-error",
+ "proc-macro2",
  "quote",
  "syn 2.0.104",
 ]

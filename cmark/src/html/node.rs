@@ -23,9 +23,27 @@ impl From<Element> for Node {
     }
 }
 
+impl From<Fragment> for Node {
+    fn from(value: Fragment) -> Self {
+        return Self::Frag(value);
+    }
+}
+
 impl From<Raw> for Node {
     fn from(value: Raw) -> Self {
         return Self::Raw(value);
+    }
+}
+
+impl From<&str> for Node {
+    fn from(value: &str) -> Self {
+        return Self::Raw(Raw::from(value));
+    }
+}
+
+impl From<String> for Node {
+    fn from(value: String) -> Self {
+        return Self::Raw(Raw::from(value));
     }
 }
 
@@ -72,5 +90,14 @@ impl PartialEq for Node {
 impl fmt::Display for Node {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         return self.render_into(f, &RenderOptions::default());
+    }
+}
+
+impl PartialEq<&str> for Node {
+    fn eq(&self, other: &&str) -> bool {
+        return match self.render(&RenderOptions::default()) {
+            Ok(v) => v == *other,
+            Err(_) => false,
+        };
     }
 }
