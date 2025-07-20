@@ -117,26 +117,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "htmlx"
-version = "0.1.0"
-dependencies = [
- "common",
- "htmlx_macros",
-]
-
-[[package]]
-name = "htmlx_macros"
-version = "0.1.0"
-dependencies = [
- "common",
- "htmlx",
- "proc-macro-error",
- "proc-macro2",
- "quote",
- "syn 2.0.104",
-]
-
-[[package]]
 name = "is_terminal_polyfill"
 version = "1.70.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
