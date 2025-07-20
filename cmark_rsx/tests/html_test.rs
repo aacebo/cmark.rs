@@ -25,8 +25,16 @@ pub fn should_render_fragment() {
 
 #[test]
 pub fn should_render_fragment_element() {
-    let value = cmark::rsx! { <>{"test"}</> };
-    assert_eq!(value, "test");
+    let value = cmark::rsx! {
+        <>
+            <>{"a"}</>
+            <>{"b"}</>
+            {"c"}
+            {"d"}
+        </>
+    };
+
+    assert_eq!(value, "abcd");
 }
 
 #[test]

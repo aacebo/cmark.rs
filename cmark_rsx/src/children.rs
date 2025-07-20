@@ -58,28 +58,11 @@ impl ToTokens for Children {
     }
 
     fn to_token_stream(&self) -> proc_macro2::TokenStream {
-        let children_quotes: Vec<_> = self
-            .0
-            .iter()
-            .map(|child| {
-                quote! { ::cmark::html::Node::from(#child) }
-            })
-            .collect();
+        let children_quotes: Vec<_> = self.0.iter().map(|child| quote! { #child }).collect();
 
         match children_quotes.len() {
             0 => quote! { vec![] },
-            1 => quote! { vec![#(#children_quotes),*] },
-            _ => {
-                let mut iter = children_quotes.iter();
-                let first = iter.next().unwrap();
-                let second = iter.next().unwrap();
-                let tuple_of_tuples = iter.fold(
-                    quote!((#first, #second)),
-                    |renderable, current| quote!((#renderable, #current)),
-                );
-
-                quote! { vec![#tuple_of_tuples] }
-            }
+            _ => quote! { vec![#(#children_quotes),*] },
         }
     }
 }
